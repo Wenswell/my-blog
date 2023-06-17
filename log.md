@@ -1,3 +1,4 @@
+# servers
 ```bash
 mkdir client
 mkdir servers
@@ -41,6 +42,45 @@ mkdir ./router
 
 ```bash
 nodemon app.js
+```
+
+# client
+
+```bash
+# 回到根目录
+yarn create vite
+# client
+# Vue
+# JavaScript
+
+# 进入项目
+cd client
+
+# 初始化
+yarn
+
+# 首次运行
+yarn run dev
+
+# 安装库
+
+# axios - 异步 HTTP 请求库 
+yarn add axios
+# 轻量级 Vue 3 state 管理器
+yarn add pinia
+# Vue 的路由库
+yarn add vue-router@4
+# Vue 封装的富文本编辑器 
+yarn add @wangeditor/editor-for-vue@next
+
+# CSS 预处理器 
+yarn add sass -D
+# 轻量级 Vue UI 库
+yarn add naive-ui -D
+# 包含400多款免费字体
+yarn add vfonts -D
+
+
 ```
 
 
