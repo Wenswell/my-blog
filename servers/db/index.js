@@ -1,6 +1,6 @@
 const sqlit3 = require('sqlite3').verbose()
 const path = require('path')
-const GenId = require('../utils/IdGenerator')
+const GenId = require('@utils/IdGenerator')
 const genid = new GenId({
   WorkerId: 1
 })

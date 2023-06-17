@@ -57,7 +57,7 @@ console.log(rows === undefined)
 ## 中间件顺序
 
 ```js
-app.use(require('./router'))
+app.use(require('@router'))
 // 先定义了路由导致multer使用失败
 app.use(multer({
   dest: "./public/upload/temp",

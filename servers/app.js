@@ -1,3 +1,16 @@
+// module-alias changes the default behavior of require
+// 必须放在最开始
+require('module-alias/register')
+// 引入 module-alias 定义路径别名
+const moduleAlias = require('module-alias')
+
+moduleAlias.addAlias('@', __dirname)
+moduleAlias.addAlias('@db', __dirname + '/db')
+moduleAlias.addAlias('@utils', __dirname + '/utils')
+moduleAlias.addAlias('@config', __dirname + '/utils/config')
+moduleAlias.addAlias('@router', __dirname + '/router')
+moduleAlias.addAlias('@public', __dirname + '/public')
+
 // 引入express
 const express = require('express')
 // 创建一个 express 的实例 app
@@ -8,8 +21,6 @@ const path = require('path')
 const multer = require('multer')
 // 指定端口
 const port = 3123
-// 引入数据库
-const { db } = require('./db')
 
 // 全局中间件
 // 固定代码：开放跨域请求
@@ -42,42 +53,12 @@ app.use(upload.any())
 // 根路径默认导向 './public/index.html'
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-
-const ADMIN_TOKEN_PATH = '/_token'
-app.use(async (request, result, next) => {
-  if (request.path.indexOf(ADMIN_TOKEN_PATH) > -1) {
-    try {
-      const { token } = request.headers
-
-      const adminTokenSql = 'SELECT `id` FROM `admin` WHERE `token` = ?'
-      const adminTokenResult = await db.async.all(adminTokenSql, [token])
-      // adminTokenResult 为 [ { id: 1 } ] 或者 [ ]
-      if (adminTokenResult.length === 0) {
-        result.send({
-          code: 403,
-          msg: '需要登录',
-          data: null
-        })
-        return
-      }
-    } catch (err) {
-      console.error(err)
-      result.send({
-        code: 500,
-        msg: '服务器错误',
-        data: null
-      })
-      return
-    }
-  }
-  next()
-})
-
+// 验证token
+app.use(require('@utils/token/token.middleware'))
 
 // 默认导向router，不在app.js中写请求处理
-// app.use('/db',require('./router/DbRouter'))
-app.use(require('./router'))
+// app.use('/db',require('@router/DbRouter'))
+app.use(require('@router'))
 
 // 监听端口
 app.listen(port, () => {

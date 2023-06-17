@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { db, genid } = require('../../db')
+const { db, genid } = require('@db')
 const Joi = require('joi');
 
 const schemaId = Joi.object({
@@ -102,7 +102,7 @@ router.put('/_token/update', async (request, result) => {
   // 参数顺序固定为 type id
 
   const findId = await db.async.all('SELECT `id` FROM `category` WHERE `id`=?', id)
-  console.log("findId", findId)
+  // console.log("findId", findId)
   if (!findId.length) return result.status(400).send({
     code: 400,
     msg: '无对应 id 的分类'

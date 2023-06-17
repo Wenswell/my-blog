@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { db, genid } = require('../../db')
+const { db, genid } = require('@db')
 const Joi = require('joi');
 
 const schemaId = Joi.object({

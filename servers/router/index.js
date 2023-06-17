@@ -30,14 +30,14 @@ const router = express.Router()
 
 
 // 单文件导入
-router.use(require('./test'))
-router.use('/admin', require('./admin'))
-router.use('/category', require('./category'))
-router.use('/blog', require('./blog'))
+router.use(require('@router/test'))
+router.use('/admin', require('@router/admin'))
+router.use('/category', require('@router/category'))
+router.use('/blog', require('@router/blog'))
 
 
 // 多文件导入
-const { wildcardRouter, fileRouter } = require('./default')
+const { wildcardRouter, fileRouter } = require('@router/default')
 
 router.use(fileRouter)
 // 通用匹配放最后

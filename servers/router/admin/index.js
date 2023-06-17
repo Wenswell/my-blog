@@ -1,9 +1,11 @@
 const express = require('express')
 const router = express.Router()
 
-const { v4: uuidv4 } = require('uuid')
+const { db, genid } = require('@db')
 
-const { db, genid } = require('../../db')
+const {
+  generateAccessToken,
+  generateRefreshToken } = require('@utils/token/jwt')
 
 // 管理员登录
 router.post('/login', async (requset, result) => {
@@ -23,20 +25,20 @@ router.post('/login', async (requset, result) => {
     if (rows.length === 0) {
       result.send({
         code: 500,
-        msg: '登录失败'
+        msg: '登录失败, 检查账号或密码'
       })
     } else {
 
-      // 生成token
-      const loginTkoen = uuidv4()
       // 提取id并去除密码
       const { id, password, ...adminInfo } = rows[0];
-      // 发送到前端的信息
-      const adminData = { ...adminInfo, token: loginTkoen };
 
-      // 更新服务器的token
-      const updataTokenSql = 'UPDATE admin SET token = ? WHERE id = ?';
-      await db.async.run(updataTokenSql, [loginTkoen, id]);
+      // 生成token
+      const accessToken = generateAccessToken({ id })
+      const refreshToken = generateRefreshToken({ id })
+
+      // 发送到前端的信息
+      const adminData = { ...adminInfo, accessToken, refreshToken };
+
       result.status(200).json({
         code: 200,
         msg: '登录成功',
