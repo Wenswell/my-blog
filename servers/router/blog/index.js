@@ -20,12 +20,20 @@ const schemaIdTitleCateCont = Joi.object({
   content: Joi.string()
 });
 
+/* 
 
+接口汇总 /blog
+
+/search
+/_token/delete
+/_token/update
+/_token/add
+
+ */
 
 
 // GET 搜索文章
 // 必须参数: id
-// 格式： /category/delete?id={id}
 router.get('/search', async (request, result) => {
 
   // 从请求参数中获取查询条件
@@ -105,12 +113,10 @@ router.get('/search', async (request, result) => {
 })
 
 
-
-
 // DELETE 删除文章
 // 必须参数: id
 // 格式： /category/delete?id={id}
-router.delete('/delete', async (request, result) => {
+router.delete('/_token/delete', async (request, result) => {
   const { error, value } = schemaId.validate({ id: request.query.id });
 
   if (error) {
@@ -143,7 +149,7 @@ router.delete('/delete', async (request, result) => {
 // PUT 修改文章
 // 必须参数: id, title
 // 可选参数: categoryId content
-router.put('/update', async (request, result) => {
+router.put('/_token/update', async (request, result) => {
   const { error, value } = schemaIdTitleCateCont.validate(request.body);
 
   if (error) {
@@ -184,11 +190,10 @@ router.put('/update', async (request, result) => {
   }
 })
 
-
 // POST 新增博客文章
 // 必须参数: title
 // 可选参数: categoryId content
-router.post('/add', async (request, result) => {
+router.post('/_token/add', async (request, result) => {
   const { error, value } = schemaTitleCateCont.validate(request.body);
 
   if (error) {

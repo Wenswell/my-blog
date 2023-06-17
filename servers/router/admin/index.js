@@ -5,13 +5,14 @@ const { v4: uuidv4 } = require('uuid')
 
 const { db, genid } = require('../../db')
 
+// 管理员登录
 router.post('/login', async (requset, result) => {
 
   try {
 
     // 提取账号密码
     const { account, password } = requset.body
-    
+
     // 查询账号密码
     const sql = ` select * from \`admin\`
                   where \`account\` = ?
@@ -45,7 +46,13 @@ router.post('/login', async (requset, result) => {
 
 
   } catch (err) {
-    console.log('登录出错，', err)
+    console.error(err)
+    result.send({
+      code: 500,
+      msg: '服务器错误',
+      data: null
+    })
+    return
   }
 })
 

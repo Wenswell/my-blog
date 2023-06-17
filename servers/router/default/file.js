@@ -1,39 +1,98 @@
 const router = require('express').Router()
 const fs = require('fs')
 const path = require('path')
+const { db, genid } = require('../../db')
 
-// 上传文件
-router.post('/upload', (req, res) => {
-  console.log("req.formData", req.formData)
-  console.log("req.files", req.files)
-  console.log("req.file", req.file)
-  // 获取所有上传的文件
-  const files = req.files
+
+/* 
+
+接口汇总 /
+
+/_token/rich_editor_upload
+/_token/upload
+/download
+
+ */
+
+
+// wangEditor的图片上传接口
+router.post('/_token/rich_editor_upload', async (requset, result) => {
+  // https://www.wangeditor.com/v5/menu-config.html#上传图片
+
+  const files = requset.files
+  const fileNameList = []
 
   if (!files) {
-    res.send({
+    result.send({
+      "errno": 1, // 只要不等于 0 就行
+      "message": "失败信息"
+    })
+    return
+  }
+  
+  // console.log("result.files", requset.files)
+  // console.log("files", files)
+  files.forEach(file => {
+
+    // 获取后缀
+    const lastDotIndex = file.originalname.lastIndexOf('.');
+    // 获取文件名 => const filename = file.originalname.substring(0, lastDotIndex);
+    const ext = file.originalname.substring(lastDotIndex + 1);
+    // 生成新文件名      
+    const newFilename = genid.NextId() + '.' + ext;
+
+    // 移动并修改文件名
+    fs.renameSync(
+      path.join(process.cwd(), 'public', 'upload', 'temp', file.filename),
+      path.join(process.cwd(), 'public', 'upload', newFilename)
+    )
+
+    // 收集文件名用于返回
+    fileNameList.push(`/upload/${newFilename}`)
+  })
+
+  result.send({
+    "errno": 0, // 注意：值是数字，不能是字符串
+    "data": {
+      // 每次只能上传一张图片
+      "url": fileNameList[0], // 图片 src ，必须
+      // "alt": "yyy", // 图片描述文字，非必须
+      // "href": "zzz" // 图片的链接，非必须
+    }
+  })
+
+})
+
+
+
+// 上传文件
+router.post('/_token/upload', (request, result) => {
+
+  // 获取所有上传的文件
+  const files = request.files
+
+  if (!files) {
+    result.send({
       code: 400,
       msg: "上传文件不能为空"
     })
     return
   }
 
+  // 收集服务端文件名用于返回
   const fileNameList = []
 
   // 遍历所有文件
   files.forEach(file => {
 
-    // 获取文件名和后缀
+    // 获取后缀
     const lastDotIndex = file.originalname.lastIndexOf('.');
-    // const filename = file.originalname.substring(0, lastDotIndex);
+    // 获取文件名 => const filename = file.originalname.substring(0, lastDotIndex);
     const ext = file.originalname.substring(lastDotIndex + 1);
-
     // 使用时间戳作为新文件名      
     const newFilename = Date.now() + '.' + ext;
 
     // 移动并修改文件名
-    console.log(path.join(process.cwd(), 'public', 'upload', 'temp', file.filename),)
-    console.log(path.join(process.cwd(), 'public', 'upload', newFilename))
     fs.renameSync(
       path.join(process.cwd(), 'public', 'upload', 'temp', file.filename),
       path.join(process.cwd(), 'public', 'upload', newFilename)
@@ -43,14 +102,9 @@ router.post('/upload', (req, res) => {
     // 拼接地址后即可访问
     // eg. http://localhost:3123/upload/1686923848106.jpg
     fileNameList.push(`/upload/${newFilename}`)
-
-    // 保存文件时使用新文件名    
-    // file.mv(`files/${newFilename}`, err => {
-    //   res.status(500).send(err);
-    // })
   })
 
-  res.send({
+  result.send({
     code: 200,
     msg: "ok",
     data: fileNameList,

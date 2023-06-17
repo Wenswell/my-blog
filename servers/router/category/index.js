@@ -16,6 +16,17 @@ const schemaIdType = Joi.object({
   type: Joi.string().min(1).max(25).required(),
 });
 
+/* 
+
+接口汇总 /category
+/get
+/_token/delete
+/_token/update
+/_token/add
+
+ */
+
+
 // GET 获取分类
 // 必须参数: id
 // 格式： /category/delete?id={id}
@@ -44,7 +55,7 @@ router.get('/get', async (request, result) => {
 // DELETE 删除分类
 // 必须参数: id
 // 格式： /category/delete?id={id}
-router.delete('/delete', async (request, result) => {
+router.delete('/_token/delete', async (request, result) => {
   const { error, value } = schemaId.validate({ id: request.query.id });
 
   if (error) {
@@ -76,7 +87,7 @@ router.delete('/delete', async (request, result) => {
 
 // PUT 修改分类
 // 必须参数: id, NEW-type
-router.put('/update', async (request, result) => {
+router.put('/_token/update', async (request, result) => {
   const { error, value } = schemaIdType.validate(request.body);
 
   if (error) {
@@ -118,7 +129,7 @@ router.put('/update', async (request, result) => {
 
 // POST 新增分类
 // 必须参数: type
-router.post('/add', async (request, result) => {
+router.post('/_token/add', async (request, result) => {
   const { error, value } = schemaType.validate(request.body);
 
   if (error) {
