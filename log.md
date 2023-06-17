@@ -46,6 +46,8 @@ nodemon app.js
 
 # client
 
+> Vue3 项目使用 VSCode 扩展 Volar 而不是 vetur
+
 ```bash
 # 回到根目录
 yarn create vite
@@ -71,6 +73,7 @@ yarn add pinia
 # Vue 的路由库
 yarn add vue-router@4
 # Vue 封装的富文本编辑器 
+yarn add @wangeditor/editor
 yarn add @wangeditor/editor-for-vue@next
 
 # CSS 预处理器 
@@ -80,6 +83,9 @@ yarn add naive-ui -D
 # 包含400多款免费字体
 yarn add vfonts -D
 
+# 自动导入组件
+yarn add unplugin-auto-import -D
+yarn add unplugin-vue-components -D
 
 ```
 
