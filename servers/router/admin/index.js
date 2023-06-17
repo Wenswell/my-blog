@@ -37,7 +37,7 @@ router.post('/login', async (requset, result) => {
       const refreshToken = generateRefreshToken({ id })
 
       // 发送到前端的信息
-      const adminData = { ...adminInfo, accessToken, refreshToken };
+      const adminData = { id, ...adminInfo, accessToken, refreshToken };
 
       result.status(200).json({
         code: 200,

@@ -1,0 +1,15 @@
+{ 
+  "compilerOptions": { 
+    "baseUrl": ".", 
+    "paths": { 
+      "@/*": ["src/*"], 
+      "@/components": ["src/components"] 
+    }, 
+    "experimentalDecorators": true 
+  }, 
+  "resolveExtensions": [".js", ".vue", ".ts"], 
+  "exclude": [ 
+    "node_modules", 
+    "**/node_modules/*" 
+  ] 
+}
