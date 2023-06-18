@@ -4,7 +4,7 @@ const { db, genid } = require('@db')
 const Joi = require('joi');
 
 const schemaId = Joi.object({
-  id: Joi.number().required(),
+  id: Joi.string().required(),
 });
 
 const schemaType = Joi.object({
@@ -29,12 +29,11 @@ const schemaIdType = Joi.object({
 
 // GET 获取分类
 // 必须参数: id
-// 格式： /category/delete?id={id}
 router.get('/get', async (request, result) => {
   const getCategorySql = 'SELECT * FROM `category`'
   try {
     const rows = await db.async.all(getCategorySql, [])
-    console.log("rows", rows)
+    // console.log("rows", rows)
     result.send({
       code: 200,
       msg: '获取成功',
@@ -66,6 +65,7 @@ router.delete('/_token/delete', async (request, result) => {
   }
 
   const id = value.id
+  console.log("id", id)
   const deleteCategorySql = 'DELETE FROM `category` WHERE `id` = ?'
   try {
     await db.async.run(deleteCategorySql, [id])

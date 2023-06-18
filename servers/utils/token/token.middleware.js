@@ -8,7 +8,9 @@ module.exports = async (request, result, next) => {
       const { accesstoken, refreshtoken } = request.headers
 
       verifyAccess = verifyToken(accesstoken)
+      console.log("verifyAccess", verifyAccess)
       verifyRefresh = verifyToken(refreshtoken)
+      console.log("verifyRefresh", verifyRefresh)
 
       if (!verifyAccess) {
         result.send({
