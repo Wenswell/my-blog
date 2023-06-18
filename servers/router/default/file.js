@@ -8,7 +8,7 @@ const { db, genid } = require('@db')
 
 接口汇总 /
 
-/_token/rich_editor_upload
+/rich_editor_upload
 /_token/upload
 /download
 
@@ -16,7 +16,7 @@ const { db, genid } = require('@db')
 
 
 // wangEditor的图片上传接口
-router.post('/_token/rich_editor_upload', async (requset, result) => {
+router.post('/rich_editor_upload', async (requset, result) => {
   // https://www.wangeditor.com/v5/menu-config.html#上传图片
 
   const files = requset.files

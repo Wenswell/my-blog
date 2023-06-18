@@ -2,10 +2,22 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 
 // 路由规则
 const routes = [
-  { path: '/', component: () => import('@/views/test/index.vue') },
+
+  { path: '/', redirect: '/home' },
+  { path: '/home', component: () => import('@/views/home/Index.vue') },
+  { path: '/detail', component: () => import('@/views/detail/Index.vue') },
   { path: '/login', component: () => import('@/views/auth/Login.vue') },
-  { path: '/dash', component: () => import('@/views/dashboard/index.vue') },
-  // { path: '/test', component: () => import('../views/test') }
+  {
+    path: '/dash', component: () => import('@/views/dashboard/Index.vue'),
+    redirect: '/dash/article',
+    children: [
+      { path: 'category', component: () => import('@/views/dashboard/Category.vue') },
+      { path: 'article', component: () => import('@/views/dashboard/Article.vue') },
+    ]
+  },
+  { path: '/test', component: () => import('@/views/test/index.vue') },
+  { path: '/:pathMatch(.*)*', redirect: '/test' },
+  // { path: '*', component: () => import('@/views/test/index.vue') },
 ]
 
 // vue2.0 new VueRouter({}) 创建路由实例
@@ -21,6 +33,7 @@ const router = createRouter({
     return { left: 0, top: 0 }
   }
 })
+
 
 // export { router, routes }
 export default router

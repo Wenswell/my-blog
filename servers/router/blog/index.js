@@ -24,6 +24,7 @@ const schemaIdTitleCateCont = Joi.object({
 
 接口汇总 /blog
 
+/detail
 /search
 /_token/delete
 /_token/update
@@ -31,6 +32,37 @@ const schemaIdTitleCateCont = Joi.object({
 
  */
 
+// GET 搜索文章
+// 必须参数: id
+router.get('/detail', async (request, result) => {
+
+  // 从请求参数中获取查询条件
+  const { id } = request.query
+
+  const detailSql = 'SELECT * FROM `blog` WHERE `id` = ?'
+
+  try {
+    // 执行查询操作，并获取查询结果和查询数据总数
+    const detailResult = await db.async.all(detailSql, [id])
+
+    result.send({
+      code: 200,
+      msg: '加载成功',
+      result: detailResult
+    })
+
+
+  } catch (err) {
+    result.send({
+      code: 500,
+      msg: '加载失败'
+    })
+    console.log(err);
+    // 抛出错误
+    throw err;
+  }
+
+})
 
 // GET 搜索文章
 // 必须参数: id
@@ -74,7 +106,7 @@ router.get('/search', async (request, result) => {
   const whereSqlToStr = whereSql.length > 0 ? `WHERE ${whereSql.join(' AND ')}` : ''
 
   // 构建最终的查询数据的 SQL 语句和参数
-  const searchSql = `SELECT * FROM \`blog\` ${whereSqlToStr} ORDER BY \`create_time\` DESC LIMIT ?, ?`
+  const searchSql = `SELECT \`id\`,\`category_id\`,\`title\`,substr(\`content\`,0,150) AS \`content\`, \`create_time\` FROM \`blog\` ${whereSqlToStr} ORDER BY \`create_time\` DESC LIMIT ?, ?`
   const searchParams = [...params, (newPage - 1) * newPageSize, newPageSize]
 
   // 构建最终的查询数据总数的 SQL 语句和参数
@@ -88,7 +120,7 @@ router.get('/search', async (request, result) => {
 
     result.send({
       code: 200,
-      msg: '获取成功',
+      msg: '加载成功',
       result: {
         page: newPage,
         pageSize: newPageSize,
@@ -103,7 +135,7 @@ router.get('/search', async (request, result) => {
   } catch (err) {
     result.send({
       code: 500,
-      msg: '获取失败'
+      msg: '加载失败'
     })
     console.log(err);
     // 抛出错误
@@ -127,9 +159,9 @@ router.delete('/_token/delete', async (request, result) => {
   }
 
   const id = value.id
-  const deleteCategorySql = 'DELETE FROM `blog` WHERE `id` = ?'
+  const deleteBlogSql = 'DELETE FROM `blog` WHERE `id` = ?'
   try {
-    await db.async.run(deleteCategorySql, [id])
+    await db.async.run(deleteBlogSql, [id])
     result.send({
       code: 200,
       msg: '删除成功'
@@ -161,6 +193,7 @@ router.put('/_token/update', async (request, result) => {
 
   // 验证成功后获得参数
   const { id, title, categoryId, content } = value;
+  console.log("value", value)
   // 参数顺序固定为 type id
 
   const findId = await db.async.all('SELECT `id` FROM `blog` WHERE `id`=?', id)
@@ -205,10 +238,10 @@ router.post('/_token/add', async (request, result) => {
 
   const { title, categoryId, content } = value
   const id = genid.NextId()
-  const creat_time = new Date().getTime()
+  const create_time = new Date().getTime()
 
-  const insertBlogSql = 'INSERT INTO `blog` (`id`, `title`, `category_id`, `content`, `creat_time`) VALUES (?,?,?,?,?)'
-  const params = [id, title, categoryId, content, creat_time]
+  const insertBlogSql = 'INSERT INTO `blog` (`id`, `title`, `category_id`, `content`, `create_time`) VALUES (?,?,?,?,?)'
+  const params = [id, title, categoryId, content, create_time]
 
   try {
     await db.async.run(insertBlogSql, params)

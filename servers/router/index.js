@@ -12,12 +12,14 @@ const router = express.Router()
 /category/_token/update
 /category/_token/add
 
+
+/blog/detail
 /blog/search
 /blog/_token/delete
 /blog/_token/update
 /blog/_token/add
 
-/_token/rich_editor_upload
+/rich_editor_upload // 注意：上传接口未做鉴权！
 /_token/upload
 /download
 

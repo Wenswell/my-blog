@@ -15,8 +15,8 @@
       </n-form>
       <template #footer>
 
+        <n-button @click="login" :disabled="!isValid" type="primary">登录</n-button>
         <n-checkbox v-model:checked="admin.remember" label="记住我" />
-        <n-button @click="login">登录</n-button>
 
       </template>
     </n-card>
@@ -25,7 +25,7 @@
 </template>
 
 <script setup>
-import { inject, reactive } from 'vue';
+import { computed, inject, reactive } from 'vue';
 import AdminStore from '@/store/index'
 import { useRouter } from 'vue-router';
 const router = useRouter()
@@ -35,19 +35,18 @@ const message = inject('message')
 
 const adminStore = AdminStore()
 
-
-
-
 const rules = {
   account: [
-    { required: true, message: '请输入账号', trigger: 'blur' },
-    { min: 3, max: 12, message: `账号长度 3 ~ 12 个字符`, trigger: 'blur' },
+    { required: true, message: '请输入账号', trigger: ["input", "blur"] },
+    { min: 3, max: 12, message: `账号长度 3 ~ 12 个字符`, trigger: ["input", "blur"] },
   ],
   password: [
-    { required: true, message: '请输入账号', trigger: 'blur' },
-    { min: 5, max: 18, message: `密码长度 5 ~ 18 个字符`, trigger: 'blur' },
+    { required: true, message: '请输入账号', trigger: ["input", "blur"] },
+    { min: 5, max: 18, message: `密码长度 5 ~ 18 个字符`, trigger: ["input", "blur"] },
   ],
 }
+
+const isValid = computed(() => admin.account.length > 3 && admin.account.length < 12 && admin.password.length > 5 && admin.password.length < 18);
 
 const admin = reactive({
   account: localStorage.getItem('account') || '',
@@ -71,7 +70,7 @@ const login = async () => {
       localStorage.setItem('password', admin.password)
       localStorage.setItem('remember', Number(admin.remember))
     }
-    message.info(result.data.msg)
+    message.success(result.data.msg)
     router.push('/dash')
   } else {
     message.error(result.data.msg)
