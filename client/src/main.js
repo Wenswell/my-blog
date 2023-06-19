@@ -3,7 +3,8 @@ import { createApp } from 'vue'
 const app = createApp(App)
 import App from './App.vue'
 // 初始CSS
-import 'normalize.css/normalize.css'
+import 'initialize-css/dist/_initialize.scss'
+// import './asset/style/style.scss'
 // 路由
 import router from './router'
 app.use(router)

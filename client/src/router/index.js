@@ -11,8 +11,8 @@ const routes = [
     path: '/dash', component: () => import('@/views/dashboard/Index.vue'),
     redirect: '/dash/article',
     children: [
-      { path: 'category', component: () => import('@/views/dashboard/Category.vue') },
-      { path: 'article', component: () => import('@/views/dashboard/Article.vue') },
+      { path: 'category', component: () => import('@/views/dashboard/category/index.vue') },
+      { path: 'article', component: () => import('@/views/dashboard/article/Index.vue') },
     ]
   },
   { path: '/test', component: () => import('@/views/test/index.vue') },
