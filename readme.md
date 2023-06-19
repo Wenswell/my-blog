@@ -109,3 +109,12 @@ app.use(multer({
   dest: "./public/upload/temp",
 }).any())
 ```
+
+
+## 保留关键字
+
+```js
+[plugin:vite:vue] [vue/compiler-sfc] Unexpected token (66:32)
+// 报错找不到原因
+// 使用了new作为参数
+```

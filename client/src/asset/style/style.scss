@@ -10,3 +10,11 @@
   cursor: pointer;
 }
 
+// 基础 grid 布局
+
+.grid--margin{
+  display: grid;
+  grid-gap: $gap;
+  margin: $gap auto;
+  align-items: center;
+}

@@ -1,7 +1,7 @@
 <template>
   <!--———— 1  分页器 ——————-->
 
-  <div class="pagination">
+  <div class="pagination grid--margin">
     <!--———— 1.1 分页器 左箭头 ——————-->
     <span :class="{ 'disable': pageInfo.page <= 1 }" class="pagination-arrow center--text"
       @click="$emit('toPage', pageInfo.page - 1)"></span>
@@ -36,6 +36,16 @@ const { pageInfo } = defineProps({
   pageInfo: {
     type: Object,
     required: true
+    /**
+    const pageInfo = reactive({
+      page: 1,
+      pageSize: 3,
+      count: 0,
+      pageCount: 0,
+      categoryId: 0,
+      keyword: '',
+    })
+     */
   },
 })
 
@@ -90,25 +100,10 @@ const setInfo = computed(() => {
   return numbers
 });
 
-
-/**
-const pageInfo = reactive({
-  page: 1,
-  pageSize: 3,
-  count: 0,
-  pageCount: 0,
-  categoryId: 0,
-  keyword: '',
-})
- */
-
 </script>
 
 <style lang="scss" scoped>
 .pagination {
-  display: grid;
-  margin: $gap;
-  grid-gap: $gap;
   grid-template-columns: repeat(auto-fill, minmax($side-length, 1fr));
 
   >* {
