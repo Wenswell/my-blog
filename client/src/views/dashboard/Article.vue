@@ -1,14 +1,26 @@
 <template>
   <div>
-    <n-tabs v-model:value="tabValue" type="line" animated>
-      <n-tab-pane name="list" tab="文章列表">
 
+    <!--———— 0. 顶部标签 ——————-->
+    <n-tabs v-model:value="tabValue" type="line" animated>
+
+      <!--———— 1. 文章列表 ——————-->
+      <n-tab-pane name="list" tab="文章列表">
+        <!--———— 1.1 文章列表 分页器 ——————-->
+        <Pagination :pageInfo="pageInfo" @toPage="toPage" />
+
+
+        <!--———— 1.2 文章列表 摘要 ——————-->
         <div v-for="(blog, index) in blogList" style="margin-bottom: 1rem;">
+          <!--———— 1.2.1 摘要 标题 ——————-->
           <n-card :title="blog.title">
-            <div>{{ blog.content }}</div>
+            <!--———— 1.2.2 摘要 开头内容 ——————-->
+            <div>{{ removeStyles(blog.content) }}</div>
             <template #footer>
               <n-space align="center">
+                <!--———— 1.2.3 摘要 发布时间 ——————-->
                 <div>发布时间：{{ getFormatTime(blog.create_time) }}</div>
+                <!--———— 1.2.3 摘要 修改 删除 ——————-->
                 <n-button @click="toUpdate(blog.id)">修改</n-button>
                 <n-button @click="onDelete(blog.id, blog.title)">删除</n-button>
               </n-space>
@@ -17,12 +29,13 @@
           </n-card>
         </div>
 
-        <n-space>
-          <span @click="onPage(page)" v-for="page in pageInfo.pageCount">{{ page }}</span>
-        </n-space>
+        <!--———— 1.3 文章列表 分页器 ——————-->
+        <Pagination :pageInfo="pageInfo" @toPage="toPage" />
+
 
       </n-tab-pane>
 
+      <!--———— 2. 添加文章 ——————-->
       <n-tab-pane name="add" tab="添加文章">
         <n-form>
           <n-form-item label="标题">
@@ -36,7 +49,7 @@
         </n-form>
       </n-tab-pane>
 
-
+      <!--———— 3. 修改文章 ——————-->
       <n-tab-pane name="update" tab="修改文章">
         <n-form>
           <n-form-item label="标题">
@@ -59,14 +72,22 @@ const message = inject('message')
 
 import { computed, onMounted, reactive, ref } from "vue";
 import RichTextEditorVue from "@/components/RichTextEditor.vue";
+import Pagination from "@/components/Pagination.vue";
+
 
 const tabValue = ref('list')
+
+const removeStyles = (html) => {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  return doc.body.textContent || '';
+}
 
 
 
 const pageInfo = reactive({
   page: 1,
-  pageSize: 3,
+  pageSize: 1,
   count: 0,
   pageCount: 0,
   categoryId: 0,
@@ -89,8 +110,8 @@ const getFormatTime = ((timestamp) => {
 })
 
 
-const onPage = async (page) => {
-  if (pageInfo.page == page) return
+const toPage = async (page) => {
+  if (page == pageInfo.page || page > pageInfo.pageCount || page <= 0) return
   pageInfo.page = page
   loadBlog()
 }
@@ -199,5 +220,6 @@ onMounted(() => {
 
 })
 </script>
+<style lang="scss" scoped>
 
-<style lang="scss" scoped></style>
+</style>

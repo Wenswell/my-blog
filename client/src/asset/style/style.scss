@@ -1,0 +1,12 @@
+@import "./_variables.scss";
+
+// 用于按钮
+.center--text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+}
+

@@ -106,7 +106,7 @@ router.get('/search', async (request, result) => {
   const whereSqlToStr = whereSql.length > 0 ? `WHERE ${whereSql.join(' AND ')}` : ''
 
   // 构建最终的查询数据的 SQL 语句和参数
-  const searchSql = `SELECT \`id\`,\`category_id\`,\`title\`,substr(\`content\`,0,150) AS \`content\`, \`create_time\` FROM \`blog\` ${whereSqlToStr} ORDER BY \`create_time\` DESC LIMIT ?, ?`
+  const searchSql = `SELECT \`id\`,\`category_id\`,\`title\`,substr(\`content\`,0,250) AS \`content\`, \`create_time\` FROM \`blog\` ${whereSqlToStr} ORDER BY \`create_time\` DESC LIMIT ?, ?`
   const searchParams = [...params, (newPage - 1) * newPageSize, newPageSize]
 
   // 构建最终的查询数据总数的 SQL 语句和参数
