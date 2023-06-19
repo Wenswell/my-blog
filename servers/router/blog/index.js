@@ -9,14 +9,14 @@ const schemaId = Joi.object({
 
 const schemaTitleCateCont = Joi.object({
   title: Joi.string().required(),
-  categoryId: Joi.number(),
+  categoryId: Joi.number().integer().allow(null),
   content: Joi.string()
 });
 
 const schemaIdTitleCateCont = Joi.object({
   id: Joi.number().required(),
   title: Joi.string().required(),
-  categoryId: Joi.number(),
+  categoryId: Joi.number().integer().allow(null),
   content: Joi.string()
 });
 
@@ -44,11 +44,14 @@ router.get('/detail', async (request, result) => {
   try {
     // 执行查询操作，并获取查询结果和查询数据总数
     const detailResult = await db.async.all(detailSql, [id])
-
+    // 前端统一使用categoryId
+    const { category_id, ...rest } = detailResult[0];
+    const updatedDetailResult = [{ categoryId: category_id, ...rest }];
+    console.log("updatedDetailResult", updatedDetailResult)
     result.send({
       code: 200,
       msg: '加载成功',
-      result: detailResult
+      result: updatedDetailResult
     })
 
 
@@ -106,7 +109,7 @@ router.get('/search', async (request, result) => {
   const whereSqlToStr = whereSql.length > 0 ? `WHERE ${whereSql.join(' AND ')}` : ''
 
   // 构建最终的查询数据的 SQL 语句和参数
-  const searchSql = `SELECT \`id\`,\`category_id\`,\`title\`,substr(\`content\`,0,150) AS \`content\`, \`create_time\` FROM \`blog\` ${whereSqlToStr} ORDER BY \`create_time\` DESC LIMIT ?, ?`
+  const searchSql = `SELECT \`id\`,\`category_id\`,\`title\`,substr(\`content\`,0,250) AS \`content\`, \`create_time\` FROM \`blog\` ${whereSqlToStr} ORDER BY \`create_time\` DESC LIMIT ?, ?`
   const searchParams = [...params, (newPage - 1) * newPageSize, newPageSize]
 
   // 构建最终的查询数据总数的 SQL 语句和参数

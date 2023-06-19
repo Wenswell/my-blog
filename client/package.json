@@ -12,13 +12,14 @@
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-vue": "^5.1.12",
     "axios": "^1.4.0",
-    "normalize.css": "^8.0.1",
+    "initialize-css": "^1.4.0",
+    "lodash": "^4.17.21",
     "pinia": "^2.1.4",
     "vue": "^3.2.47",
     "vue-router": "4"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^4.1.0",
+    "@vitejs/plugin-vue": "^4.2.3",
     "naive-ui": "^2.34.4",
     "sass": "^1.63.4",
     "unplugin-auto-import": "^0.16.4",

@@ -1,12 +1,8 @@
 <template>
-  <div>
-    RichTextEditor.vue - my-blog - Visual Studio Code [管理员]
-    <!-- {{ props }} -->
-    <div style="border: 1px solid #ccc">
-      <Toolbar style="border-bottom: 1px solid #ccc" :editor="editorRef" :defaultConfig="toolbarConfig" :mode="mode" />
-      <Editor style="height: 500px; overflow-y: hidden;" v-model="valueHtml" :defaultConfig="editorConfig" :mode="mode"
-        @onCreated="handleCreated" @onChange="handleChange" />
-    </div>
+  <div style="border: 1px solid #ccc">
+    <Toolbar class="top-bar" :editor="editorRef" :defaultConfig="toolbarConfig" :mode="mode" />
+    <Editor style="height: 80vh; overflow-x: hidden;" class="main-editor" v-model="valueHtml"
+      :defaultConfig="editorConfig" :mode="mode" @onCreated="handleCreated" @onChange="handleChange" />
   </div>
 </template>
 
@@ -50,7 +46,7 @@ editorConfig.MENU_CONF['insertImage'] = {
 const mode = ref('default') // 或 'simple'
 
 // 内容 HTML
-const valueHtml = ref()
+const valueHtml = ref(props.valueModel)
 
 const handleCreated = (editor) => {
   editorRef.value = editor // 记录 editor 实例，重要！
@@ -65,16 +61,13 @@ const props = defineProps({
 
 const emit = defineEmits(['update:value-model'])
 
-const handleChange = (editor) => {
+const handleChange = () => {
   emit('update:value-model', valueHtml.value)
-  console.log("valueHtml.value", valueHtml.value)
 }
 
 onMounted(() => {
-  console.log("onMounted RichTextEditor.vue")
   // 默认展示父组件中的初始值
   const initialContent = props.valueModel
-  console.log("props", props)
   setTimeout(() => {
     valueHtml.value = initialContent
   });
@@ -88,4 +81,13 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.top-bar {
+  border-bottom: 1px solid #ccc;
+}
+
+// .main-editor {
+//   max-height: 80vh !important;
+//   overflow-y: scroll;
+// }
+</style>
