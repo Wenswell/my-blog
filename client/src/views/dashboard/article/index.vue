@@ -35,7 +35,7 @@ const message = inject('message')
 
 import { computed, onMounted, reactive, ref } from "vue";
 import Pagination from "@/components/Pagination.vue";
-import ListPage from './components/article-list.vue'
+import ListPage from '@/components/ArticleList.vue'
 import AddPage from './components/article-add.vue'
 import EditPage from './components/article-edit.vue'
 
