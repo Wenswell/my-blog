@@ -87,7 +87,7 @@ const removeStyles = (html) => {
 
 const pageInfo = reactive({
   page: 1,
-  pageSize: 1,
+  pageSize: 20,
   count: 0,
   pageCount: 0,
   categoryId: 0,
@@ -100,7 +100,7 @@ const loadBlog = async () => {
     blogList.value = result.data.result.list
     pageInfo.count = result.data.result.count
     pageInfo.pageCount = pageInfo.pageSize ? Math.ceil(pageInfo.count / pageInfo.pageSize) : 0
-    message.success(result.data.msg)
+    // message.success(result.data.msg)
   } else {
     message.error(result.data.msg)
   }
