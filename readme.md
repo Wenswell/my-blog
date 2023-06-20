@@ -118,3 +118,24 @@ app.use(multer({
 // 报错找不到原因
 // 使用了new作为参数
 ```
+
+
+## 绑定
+
+
+- :searchKeyword 是Props绑定,只有在组件初始化的时候才会生效
+- @searchKeyword 是事件绑定,可以响应组件内部的更改和用户操作
+
+具体分析:
+
+- 你使用的:<HomeNav :searchKeyword="searchKeyword" />
+
+这是一个Props绑定,searchKeyword是一个数据,它只会在组件初始化的时候传入子组件。
+
+- 你想要的效果:<HomeNav @searchKeyword="searchKeyword" />
+
+这是一个事件绑定,子组件可以通过$emit触发该事件,并把参数传给父组件的searchKeyword方法。
+
+这相当于一个父子间的通信。
+
+而Props绑定只是一个静态的传值,不会响应后续的变化。

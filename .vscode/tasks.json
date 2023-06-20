@@ -1,0 +1,32 @@
+// 自动开启 Vue 客户端 和 Express 服务端
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "client-start",
+      "type": "shell",
+      "command": "cd client ; yarn run dev",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "new"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
+      "label": "serve-start",
+      "type": "shell",
+      "command": "cd servers ; nodemon app.js",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "new"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    }
+  ]
+}
