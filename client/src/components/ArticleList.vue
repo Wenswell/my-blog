@@ -41,7 +41,7 @@ const { showModel } = defineProps({
 })
 
 onMounted(() => {
-  message.success(1)
+  // message.success(1)
   if (!showModel) {
     toDetail = () => { }
   }

@@ -4,7 +4,10 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 const routes = [
 
   { path: '/', redirect: '/home' },
-  { path: '/home', component: () => import('@/views/home/Index.vue') },
+  {
+    path: '/home',
+    component: () => import('@/views/home/Index.vue'),
+  },
   { path: '/detail', component: () => import('@/views/detail/Index.vue') },
   { path: '/login', component: () => import('@/views/auth/Login.vue') },
   {
