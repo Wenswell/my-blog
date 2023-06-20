@@ -1,46 +1,35 @@
 <template>
-  <div class="home-page">
-
-    <HomeNav @search-keyword="searchBlog" />
-
-    <main class="main-content">
-
-      <!-- <Pagination v-show="pageInfo.pageCount > 1 && blogList.length" :pageInfo="pageInfo" @toPage="toPage" /> -->
+  <MainAsideBox>
+    <template v-slot:main>
+      <!-- 这里是主要内容 -->
       <ArticleList :blogList="blogList" :showModel="true" />
-      <div class="no-blog" v-show="!blogList.length">没有结果，请更换搜索关键词</div>
+      <div class="no-blog">{{ noBlog }}</div>
       <Pagination v-show="pageInfo.pageCount > 1 && blogList.length" :pageInfo="pageInfo" @toPage="toPage" />
-
-    </main>
-
-
-    <footer>
-      尾部
-    </footer>
-  </div>
+    </template>
+    <template v-slot:aside>
+      <!-- 这里是侧边栏内容 -->
+      <div class="search-box">
+        <SearchInput @search-keyword="searchBlog" />
+      </div>
+    </template>
+  </MainAsideBox>
 </template>
 
 <script setup>
 const axios = inject('axios')
 const message = inject('message')
-import HomeNav from './components/home-nav.vue'
-
+import SearchInput from './components/search-input.vue'
 import Pagination from "@/components/Pagination.vue";
-import ArticleList from '@/components/ArticleList.vue'
+import MainAsideBox from "@/components/MainAsideBox.vue";
 import { onMounted, reactive, ref } from "vue";
-
-
-
-const searchBlog = (keyword) => {
-  pageInfo.keyword = keyword
-  loadBlog(1)
-}
-
 
 
 // 文章预览列表
 let blogList = ref([])
+let noBlog = ref('')
 // 加载文章列表
 const loadBlog = async (isSearch) => {
+  noBlog.value = ''
   const result = await axios.get(`/blog/search?categoryId=${pageInfo.categoryId}&keyword=${pageInfo.keyword}&page=${pageInfo.page}&pageSize=${pageInfo.pageSize}`)
   if (result.data.code === 200) {
     blogList.value = result.data.result.list
@@ -53,6 +42,7 @@ const loadBlog = async (isSearch) => {
     } else if (isSearch) {
       // 没有结果
       message.warning('没有结果，请更换搜索关键词')
+      noBlog.value = '没有结果，请更换搜索关键词'
     }
 
     // message.success(result.data.msg)
@@ -64,7 +54,7 @@ const loadBlog = async (isSearch) => {
 // 列表分页信息
 const pageInfo = reactive({
   page: 1,
-  pageSize: 2,
+  pageSize: 10,
   count: 0,
   pageCount: 0,
   categoryId: 0,
@@ -77,6 +67,11 @@ const toPage = async (page) => {
   loadBlog()
 }
 
+// 搜索文章
+const searchBlog = (keyword) => {
+  pageInfo.keyword = keyword
+  loadBlog(1)
+}
 
 onMounted(() => {
   loadBlog()
@@ -84,21 +79,12 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.home-page {
-  margin: $gap auto;
-  max-width: 80vw;
-  height: 100%;
-}
-
-
-.main-content {
-  margin: $gap;
-
-  .no-blog {
-    @extend .center--text;
-    font-size: $fs--big;
-    color: $light-grey;
-    cursor: auto;
-  }
+.no-blog {
+  @extend .center--text;
+  font-size: $fs--big;
+  color: $dark;
+  font-weight: bold;
+  cursor: auto;
+  -webkit-text-stroke: 1px $light;
 }
 </style>

@@ -3,12 +3,25 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 // 路由规则
 const routes = [
 
-  { path: '/', redirect: '/home' },
+  // { path: '/', redirect: '/home' },
   {
-    path: '/home',
-    component: () => import('@/views/home/Index.vue'),
+    path: '/',
+    redirect: '/home',
+    component: () => import('@/views/index/Index.vue'),
+    children: [
+      {
+        path: 'home',
+        component: () => import('@/views/index/Home.vue'),
+      },
+      // { path: 'detail', component: () => import('@/views/detail/Index.vue') },
+      {
+        path: 'detail/:id',
+        component: () => import('@/views/detail/Index.vue')
+      },
+    ]
   },
-  { path: '/detail', component: () => import('@/views/detail/Index.vue') },
+  {
+  },
   { path: '/login', component: () => import('@/views/auth/Login.vue') },
   {
     path: '/dash', component: () => import('@/views/dashboard/Index.vue'),

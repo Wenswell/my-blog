@@ -50,7 +50,7 @@ onMounted(() => {
 import { useRouter } from 'vue-router';
 const router = useRouter()
 let toDetail = (id) => {
-  router.push(`/detail?id=${id}`)
+  router.push(`/detail/${id}`)
 }
 
 // 将HTML转为txt，移除样式

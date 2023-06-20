@@ -3,34 +3,23 @@
 
   <div class="pagination grid--margin">
     <!--———— 1.1 分页器 左箭头 ——————-->
-    <span :class="{ 'disable': pageInfo.page <= 1 }" class="pagination-arrow center--text"
-      @click="$emit('toPage', pageInfo.page - 1)"></span>
+    <button :disabled="pageInfo.page <= 1" :class="{ 'disable': pageInfo.page <= 1 }"
+      class="pagination-arrow center--text" @click="handleClick(pageInfo.page - 1)"><n-icon size="1.1rem"
+        :component="ArrowBack" /></button>
+    <!--———— 1.3 分页器 右箭头 ——————-->
+    <button :disabled="pageInfo.page >= pageInfo.pageCount" :class="{ 'disable': pageInfo.page >= pageInfo.pageCount }"
+      class="pagination-arrow center--text" @click="handleClick(pageInfo.page + 1)"><n-icon size="1.1rem"
+        :component="ArrowForward" /></button>
 
     <!--———— 1.2 分页器 页数 ——————-->
-    <!-- 首页 -->
-    <span :class="{ 'active': 1 == pageInfo.page }" class="pagination-item center--text" @click="$emit('toPage', 1)">
-      {{ 1 }}
-    </span>
-
-    <!-- 中间页 -->
-    <span :class="{ active: page.n == pageInfo.page }" class="pagination-item center--text"
-      @click="$emit('toPage', page.n)" v-for="page in setInfo">{{ page.d }}</span>
-
-    <!-- 尾页 -->
-    <span v-if="pageInfo.pageCount > 1" :class="{ 'active': pageInfo.pageCount == pageInfo.page }"
-      class="pagination-item center--text" @click="$emit('toPage', pageInfo.pageCount)">
-      {{ pageInfo.pageCount }}
-    </span>
-
-    <!--———— 1.3 分页器 右箭头 ——————-->
-    <span :class="{ 'disable': pageInfo.page >= pageInfo.pageCount }" class="pagination-arrow center--text"
-      @click="$emit('toPage', pageInfo.page + 1)"></span>
+    <button :class="{ active: page.n == pageInfo.page }" class="pagination-item center--text" @click="handleClick(page.n)"
+      v-for="page in createPaginator">{{ page.d }}</button>
   </div>
 </template>
 
 <script setup>
-import { prop } from 'dom7';
 import { computed, reactive, ref } from 'vue';
+import { ArrowBack, ArrowForward } from "@vicons/ionicons5";
 
 const { pageInfo } = defineProps({
   pageInfo: {
@@ -49,56 +38,115 @@ const { pageInfo } = defineProps({
   },
 })
 
+const emit = defineEmits(['to-page'])
+function handleClick(page) {
+  emit('to-page', page)
+}
+
+
+/**
+ * 创建分页器
+ * @param {number} currentPage 当前页数
+ * @param {number} totalPages 总页数
+ * @param {number} displayLength 要显示的页码长度
+ * @returns {Array} 生成的分页数组
+ */
+const createPaginator = computed(() => {
+  let currentPage = pageInfo.page
+  let totalPages = pageInfo.pageCount
+  let displayLength = 7
+  // 初始化分页数组
+  const pages = [];
+
+  // 左边界，用于计算开始的页码
+  const leftBoundary = Math.floor((displayLength - 4) / 2);
+  // 右边界，用于计算结束的页码
+  const rightBoundary = Math.ceil((displayLength - 4) / 2);
+
+  // 首页
+  pages.push({ n: 1, d: 1 });
+
+  // 当需要显示省略号时，添加省略号
+  if (currentPage - leftBoundary > 2) {
+    pages.push({ n: currentPage - leftBoundary - 1, d: '...' });
+  }
+
+  // 计算开始页码
+  const startPage = Math.max(2, currentPage - leftBoundary);
+
+  // 计算结束页码
+  const endPage = Math.min(currentPage + rightBoundary, totalPages - 1);
+
+  // 添加中间页码
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push({ n: i, d: i, });
+  }
+
+  // 当需要显示省略号时，添加省略号
+  if (currentPage + rightBoundary < totalPages - 1) {
+    pages.push({ n: currentPage + rightBoundary + 1, d: '...' });
+  }
+
+  // 末页
+  pages.push({ n: totalPages, d: totalPages, });
+
+  console.log(' ,left: ' + leftBoundary + ' ,curr: ' + currentPage + ' ,righ: ' + rightBoundary)
+
+
+
+
+  return pages;
+})
 
 // 一个计算函数来生成分页信息
-const setInfo = computed(() => {
+// const setInfo = computed(() => {
 
-  // 要显示的页码数量  
-  // BUG: 更改xx后需要修改逻辑！！
-  const xx = 10 / 2;
-  // 生成分页号数组  
-  const numbers = [];
+//   // 要显示的页码数量
+//   // BUG: 更改xx后需要修改逻辑！！
+//   const xx = 10 / 2;
+//   // 生成分页号数组
+//   const numbers = [];
 
-  let start, end;
+//   let start, end;
 
-  // 页数过少则直接直接添加后返回
-  if (pageInfo.pageCount < xx) {
-    for (let i = 2; i <= pageInfo.pageCount - 1; i++) {
-      numbers.push({ n: i, d: i, });
-    }
-    return numbers
-  }
+//   // 页数过少则直接直接添加后返回
+//   if (pageInfo.pageCount < xx) {
+//     for (let i = 2; i <= pageInfo.pageCount - 1; i++) {
+//       numbers.push({ n: i, d: i, });
+//     }
+//     return numbers
+//   }
 
-  // 根据当前页决定开始页和结束页
-  if (pageInfo.page <= xx) {
-    start = 2;
-    end = start + xx;
-  } else if (pageInfo.pageCount - pageInfo.page + 1 > xx) {
-    start = pageInfo.page - 2;
-    end = start + xx - 1;
-  } else {
-    start = pageInfo.pageCount - xx - 1;
-    end = start + xx;
-  }
+//   // 根据当前页决定开始页和结束页
+//   if (pageInfo.page <= xx) {
+//     start = 2;
+//     end = start + xx;
+//   } else if (pageInfo.pageCount - pageInfo.page + 1 > xx) {
+//     start = pageInfo.page - 2;
+//     end = start + xx - 1;
+//   } else {
+//     start = pageInfo.pageCount - xx - 1;
+//     end = start + xx;
+//   }
 
-  // 如果开始页不是2,添加'...'     
-  if (start > 2) {
-    numbers.push({ n: start - 1, d: '...', });
-  }
+//   // 如果开始页不是2,添加'...'
+//   if (start > 2) {
+//     numbers.push({ n: start - 1, d: '...', });
+//   }
 
-  // 添加页码     
-  for (let i = start; i <= end; i++) {
-    numbers.push({ n: i, d: i, });
-  }
+//   // 添加页码
+//   for (let i = start; i <= end; i++) {
+//     numbers.push({ n: i, d: i, });
+//   }
 
-  // 如果结束页不是最后一页,添加'...' 
-  if (end < pageInfo.pageCount - 1) {
-    numbers.push({ n: end + 1, d: '...', });
-  }
+//   // 如果结束页不是最后一页,添加'...'
+//   if (end < pageInfo.pageCount - 1) {
+//     numbers.push({ n: end + 1, d: '...', });
+//   }
 
-  // 返回分页信息  
-  return numbers
-});
+//   // 返回分页信息
+//   return numbers
+// });
 
 </script>
 
@@ -107,6 +155,7 @@ const setInfo = computed(() => {
   grid-template-columns: repeat(auto-fill, minmax($side-length, 1fr));
 
   >* {
+    background-color: $light;
     width: $side-length;
     height: $side-length;
   }
@@ -135,7 +184,7 @@ const setInfo = computed(() => {
 
     // 禁用样式
     &.disable {
-      opacity: 0.3;
+      opacity: 0.5;
       // cursor: not-allowed;
       pointer-events: none;
       border: none;
@@ -145,14 +194,6 @@ const setInfo = computed(() => {
     &:hover {
       color: $primary-color;
       border-color: $primary-color;
-    }
-
-    &:first-child::before {
-      content: '<';
-    }
-
-    &:last-child::before {
-      content: '>';
     }
 
   }

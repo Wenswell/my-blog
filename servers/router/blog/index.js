@@ -47,7 +47,7 @@ router.get('/detail', async (request, result) => {
     // 前端统一使用categoryId
     const { category_id, ...rest } = detailResult[0];
     const updatedDetailResult = [{ categoryId: category_id, ...rest }];
-    console.log("updatedDetailResult", updatedDetailResult)
+    // console.log("updatedDetailResult", updatedDetailResult)
     result.send({
       code: 200,
       msg: '加载成功',
