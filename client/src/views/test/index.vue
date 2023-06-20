@@ -1,16 +1,43 @@
 <template>
+  ------------------------------------------------------------
+  <br>  
+  ------------------------------------------------------------
+  <br> 
+  ------------------------------------------------------------
+  <br> 
+  ------------------------------------------------------------
+  <br> 
+  ------------------------------------------------------------
+  <br> 
+  ------------------------------------------------------------
+  <div style="position: fixed;top: 1rem;right: 1rem;display: block;background-color: antiquewhite;">
+    <br> 111{{ activeTitle }}
+    <ul>
+      <li v-for="item in tableOfContents" :key="item.id" @click="scrollTo(item.el)" :class="{ 'active': activeTitle === item.id }">
+        {{ item.text }}
+        <ul v-if="item.children.length" v-show="activeTitle === item.id || item.children.some(child => child.id === activeTitle)">          
+          activeTitle: {{ activeTitle }}. item.id: {{ item.id }}.
+          <li v-for="child in item.children" :key="child.id" @click.stop="scrollTo(child.el)">
+            {{ child.text }}
+
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  ------------------------------------------------------------
+  <br>
+
+  <ul>
+    <li v-for="item in tableOfContents" :key="item.id" @click="scrollTo(item.el)" :class="{ 'active': activeTitle === item.id }">
+      <a :href="'#' + item.id">{{ item.text }}</a>
+      <TableOfContents v-if="item.children" :toc="item.children" />
+    </li>
+  </ul>
   <div ref="article">
     <!-- 文章内容 -->
-    <span style="position: fixed;" class="progress">p{{ progress }}</span>
 
-    {{  }}
     <!-- {{ getTitles() }} -->
-    <h1>目录</h1>
-    <ul>
-      <li><a href="#chapter-1">第一章</a></li>
-      <li><a href="#chapter-2">第二章</a></li>
-    </ul>
-
     <h1 id="chapter-1">第一章</h1>
     <p>第一章前言</p>
 
@@ -64,187 +91,105 @@
 
     <h4 id="chapter-2-section-2-subsection-2">第二节第二小节</h4>
     <p>第二节第二小节内容</p>
-    titles{{ titles }}
     ------------------------------------------------------------
 
-    <div class="catalog-content">catalog-content
-      <div v-for="title in titles" :key="title.id" @click="scrollToView(title.scrollTop)" :class="[
-        'catalog-item',
-        title.id == title.id ? 'active' : 'not-active',
-      ]" v-show="title.isVisible" :title="title.rawName">
-        {{ title.name }}
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue';
+import { reactive } from 'vue';
 
-const aass = (() => {
-  
-  return getTitles(article.value);
-});
 
+let tableOfContents = reactive([])
 
 const article = ref(null)
-
 onMounted(() => {
-  console.log("xxx", xxx)
-  xxx = aass()
-  console.log("xxx", xxx)
-  console.log("aass", aass())
-  console.log("titles", titles)
-  console.log(JSON.parse(JSON.stringify(xxx, function(key, value) {
-  if (key === 'parent' && value) {
-    return '[Circular]';
-  }
-  return value;
-}, 2)))
-});
+  tableOfContents = generateTableOfContents(article.value)
+  window.addEventListener("scroll", handleScroll);
 
-let xxx = reactive([])
-
-let progress = ref(0);
-
-function getTitles (theNode) {
-  console.log("aaarticless", article.value)
-  let titles = [];
-  let levels = ["h2", "h3", "h4"];
-
-  let articleElement = article.value;
-  if (!articleElement) {
-    return titles;
-  }
-
-  let elements = Array.from(articleElement.querySelectorAll("*"));
-
-  // 调整标签等级
-  let tagNames = new Set(
-    elements.map((el) => el.tagName.toLowerCase())
-  );
-  for (let i = levels.length - 1; i >= 0; i--) {
-    if (!tagNames.has(levels[i])) {
-      levels.splice(i, 1);
+})
+let activeTitle =ref([])
+const scrollTo =(element)=> {
+    element.scrollIntoView({ behavior: "smooth" });
+}
+const handleScroll = ()=> {
+    let closestTitle = null;
+    let closestOffset = Number.POSITIVE_INFINITY;
+    function traverseNestedArray(arr, callback) {
+  arr.forEach((item) => {
+    callback(item);
+    if (item.children && item.children.length > 0) {
+      traverseNestedArray(item.children, callback);
     }
+  });
+}
+traverseNestedArray(tableOfContents, (item) => {
+      const offset = Math.abs(item.el.getBoundingClientRect().top);
+      console.log("item", item)
+      console.log("item.el.getBoundingClientRect()", item.el.getBoundingClientRect())
+      console.log("offset", offset)
+
+      if (offset < closestOffset) {
+        closestTitle = item.id;
+        closestOffset = offset;
+      }
+    })
+
+    activeTitle.value = closestTitle;
   }
 
-  let serialNumbers = levels.map(() => 0);
-  for (let i = 0; i < elements.length; i++) {
-    const element = elements[i];
-    let tagName = element.tagName.toLowerCase();
-    let level = levels.indexOf(tagName);
-    if (level == -1) continue;
 
-    let id = tagName + "-" + element.innerText + "-" + i;
-    let node = {
+/**
+ * 生成HTML格式文章的目录
+ * @param {HTMLElement} articleElement - 文章的HTML元素
+ * @returns {Array} 返回多层目录数组，根据标签名h1，h2，h3等分层
+ */
+
+function generateTableOfContents(articleElement) {
+  const matches = articleElement.innerHTML.match(/<(h[1-6]).*?(?=id=").*?id="(.*?)">.*?(<\/h[1-6]>)/g);
+  if (!matches) return [];
+
+  let tableOfContents = [];
+  let stack = [];
+
+  matches.forEach(match => {
+    console.log("------------match", match)
+    const tag = match.match(/<h[1-6]/)[0].substr(1);
+    const id = match.match(/id="(.*?)"/)[1];
+    const text = match.match(/>(.*?)</)[1];
+    const el = document.getElementById(id);
+
+    const newItem = {
       id,
-      level,
-      parent: null,
-      children: [],
-      rawName: element.innerText,
-      scrollTop: element.offsetTop,
+      el,
+      tag,
+      text,
+      children: []
     };
 
-    if (titles.length > 0) {
-      let lastNode = titles.at(-1);
-
-      // 遇到子标题
-      if (lastNode.level < node.level) {
-        node.parent = lastNode;
-        lastNode.children.push(node);
-      }
-      // 遇到上一级标题
-      else if (lastNode.level > node.level) {
-        serialNumbers.fill(0, level + 1);
-        let parent = lastNode.parent;
-        while (parent) {
-          if (parent.level < node.level) {
-            parent.children.push(node);
-            node.parent = parent;
-            break;
-          }
-          parent = parent.parent;
+    if (!stack.length) {
+      stack.push(newItem);
+      tableOfContents.push(newItem);
+    } else {
+      while (stack.length) {
+        const top = stack[stack.length - 1];
+        if (parseInt(top.tag[1], 10) < parseInt(tag[1], 10)) {
+          top.children.push(newItem);
+          stack.push(newItem);
+          break;
+        } else {
+          stack.pop();
         }
       }
-      // 遇到平级
-      else if (lastNode.parent) {
-        node.parent = lastNode.parent;
-        lastNode.parent.children.push(node);
+      if (!stack.length) {
+        stack.push(newItem);
+        tableOfContents.push(newItem);
       }
     }
+  });
 
-    serialNumbers[level] += 1;
-    let serialNumber = serialNumbers.slice(0, level + 1).join(".");
-
-    node.isVisible = node.parent == null;
-    node.name = serialNumber + ". " + element.innerText;
-    titles.push(node);
-  }
-
-  console.log("titles", titles)
-  titles = titles
-  return titles;
+  return tableOfContents;
 }
-
-let titles = JSON.parse(JSON.stringify(xxx, function(key, value) {
-  if (key === 'parent' && value) {
-    return '[Circular]';
-  }
-  return value;
-}, 2));
-
-window.addEventListener("scroll", function () {
-  progress.value =
-    parseInt(
-      (window.scrollY / document.documentElement.scrollHeight) *
-      100
-    ) + "%";
-
-  let visibleTitles = [];
-
-  for (let i = titles.length - 1; i >= 0; i--) {
-    const title = titles[i];
-    if (title.scrollTop <= window.scrollY) {
-      if (currentTitle.id === title.id) return;
-
-      Object.assign(currentTitle, title);
-
-      // 展开节点
-      setChildrenVisible(title, true);
-      visibleTitles.push(title);
-
-      // 展开父节点
-      let parent = title.parent;
-      while (parent) {
-        setChildrenVisible(parent, true);
-        visibleTitles.push(parent);
-        parent = parent.parent;
-      }
-
-      // 折叠其余节点
-      for (const t of titles) {
-        if (!visibleTitles.includes(t)) {
-          setChildrenVisible(t, false);
-        }
-      }
-
-      return;
-    }
-  }
-});
-function setChildrenVisible(title, isVisible) {
-  for (const child of title.children) {
-    child.isVisible = isVisible;
-  }
-}
-
-// 滚动到指定的位置
-function scrollToView(scrollTop) {
-  window.scrollTo({ top: scrollTop, behavior: "smooth" });
-}
-
-// return { titles, currentTitle, progress, scrollToView };
 </script>
 
 <style lang="scss" scoped></style>
