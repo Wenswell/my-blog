@@ -2,7 +2,7 @@
   <div>
 
     <!--———— 0. 顶部标签 ——————-->
-    <n-tabs v-model:value="tabValue" type="line" animated>
+    <n-tabs class="aaaaaaaaaa" v-model:value="tabValue" type="line" animated>
 
       <!--———— 1. 文章列表 ——————-->
       <n-tab-pane name="list" tab="文章列表">
@@ -25,6 +25,11 @@
         <EditPage :updateArticle="updateArticle" @changeTab="changeTab" @loadBlog="loadBlog" />
 
       </n-tab-pane>
+
+      <n-tab-pane name="md-add" tab="添加文章-MD">
+        <AddMdPage />
+
+      </n-tab-pane>
     </n-tabs>
   </div>
 </template>
@@ -38,9 +43,10 @@ import Pagination from "@/components/Pagination.vue";
 import ListPage from '@/components/ArticleList.vue'
 import AddPage from './components/article-add.vue'
 import EditPage from './components/article-edit.vue'
+import AddMdPage from './components/article-add-md.vue'
 
 // <!--———— 0. 顶部标签 ——————-->
-const tabValue = ref('list')
+const tabValue = ref('md-add')
 const changeTab = (type) => {
   tabValue.value = type
 }
