@@ -4,10 +4,10 @@
       网站标题 {{ isNavHidden }}s
     </span>
     <div class="nav-right">
-      <div class="nav-right-item" @click="router.push(item.href)" v-for="item in topBarItem">
+      <button class="nav-right-item" @click="router.push(item.href)" v-for="item in topBarItem">
         <n-icon class="nav-right-item-icon" size="1rem" :component="item.icon" />
         {{ item.title }}
-      </div>
+      </button>
 
     </div>
   </nav>
@@ -68,6 +68,8 @@ const {isNavHidden} = defineProps({
       transition: all 350ms ease;
       position: relative;
       z-index: 1;
+      background-color: $light;
+      border: none;
 
       &::before {
         content: '';
@@ -77,7 +79,7 @@ const {isNavHidden} = defineProps({
         width: 100%;
         height: 0%;
         background-color: $primary-transp;
-        transition: height 0.3s ease;
+        transition: height 0.3s cubic-bezier(0, 0.5, 0.5, 1);;
         z-index: -1;
       }
 

@@ -145,3 +145,14 @@ app.use(multer({
 
 - 添加、移除操作之后最好清除缓存 `yarn cache clean`
 - 或者重新安装
+
+## ref reactive
+
+> 如果父组件使用`const valueModel = reactive([]);`给子组件绑定props不能得到子组件的值
+
+使用 `reactive` 函数可以将一个普通的 JavaScript 对象转换为响应式对象，从而在 Vue 组件中能够实现自动更新视图的效果。然而，`reactive` 函数只是将一个普通对象转换为响应式对象，它并没有为对象中的属性添加 getter 和 setter，所以在访问对象属性时需要使用 `valueModel.value` 来获取实际的值。
+
+因此，如果在父组件中使用 `const valueModel = reactive([])` 来定义 `valueModel`，则在子组件中通过 `props` 接收到的是一个响应式对象，而不是数组。这时，如果直接在子组件中修改 `valueModel` 的值，就会导致 Vue 无法正确地监听到值的变化，从而无法实现自动更新视图的效果。
+
+
+

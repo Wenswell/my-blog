@@ -34,7 +34,7 @@ app.provide('axios', axios)
 app.provide('message', message)
 app.provide('dialog', dialog)
 app.provide('notification', notification)
-app.provide('serverURL', axios.defaults.baseURL)
+// app.provide('serverURL', axios.defaults.baseURL)
 
 app.mount('#app')
 // createApp(App).use(router).use(createPinia()).mount('#app')

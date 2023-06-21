@@ -1,5 +1,5 @@
 <template>
-  <n-input v-model:value="keyword" @keyup.enter="toSearch" class="search-input" placeholder="搜索">
+  <n-input clearable v-model:value="keyword" @keyup.enter="toSearch" class="search-input" placeholder="搜索">
     <template #suffix>
       <n-icon class="search-icon" @click="toSearch" :component="Search" />
     </template>

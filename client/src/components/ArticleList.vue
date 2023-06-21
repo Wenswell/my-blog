@@ -100,6 +100,7 @@ const onDelete = async (id, title) => {
   display: flex;
   flex-direction: column;
   gap: $gap;
+  padding-bottom: $gap;
 }
 
 .blog-card {
