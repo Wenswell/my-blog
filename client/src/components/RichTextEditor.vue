@@ -18,7 +18,8 @@ const toolbarConfig = { excludeKeys: ['uploadVideo'] }
 
 const editorConfig = { placeholder: '请输入内容...' }
 // 配置图片上传功能 https://www.wangeditor.com/v5/menu-config.html#基本配置
-const serverURL = inject('serverURL')
+const axios = inject('axios')
+const serverURL = axios.defaults.baseURL
 const kb = 1024
 editorConfig.MENU_CONF = {}
 editorConfig.MENU_CONF['uploadImage'] = {

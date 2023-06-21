@@ -32,6 +32,7 @@ const { pageInfo } = defineProps({
       count: 0,
       pageCount: 0,
       categoryId: 0,
+      tags:"",
       keyword: '',
     })
      */
@@ -90,7 +91,6 @@ const createPaginator = computed(() => {
   // 末页
   pages.push({ n: totalPages, d: totalPages, });
 
-  console.log(' ,left: ' + leftBoundary + ' ,curr: ' + currentPage + ' ,righ: ' + rightBoundary)
 
 
 

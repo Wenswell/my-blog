@@ -7,9 +7,10 @@ const schemaId = Joi.object({
   id: Joi.number().required(),
 });
 
-const schemaTitleCateCont = Joi.object({
+const schemaAddBlog = Joi.object({
   title: Joi.string().required(),
   categoryId: Joi.number().integer().allow(null),
+  tags: Joi.string(),
   content: Joi.string()
 });
 
@@ -72,18 +73,21 @@ router.get('/detail', async (request, result) => {
 router.get('/search', async (request, result) => {
 
   // 从请求参数中获取查询条件
-  const { keyword, categoryId, page, pageSize } = request.query
+  const { keyword, categoryId,tags , page, pageSize } = request.query
 
   // 设置默认值
   const defaultPage = 1
   const defaultPageSize = 10
   const defaultCategoryId = 0
+  const defaultTags = ''
   const defaultKeyword = ''
+
 
   // 规范化查询条件，避免 undefined null
   const newPage = page || defaultPage
   const newPageSize = pageSize || defaultPageSize
   const newCategoryId = categoryId || defaultCategoryId
+  const newTags = tags || defaultTags
   const newKeyword = keyword || defaultKeyword
 
   // 初始化参数列表
@@ -95,6 +99,18 @@ router.get('/search', async (request, result) => {
   if (newCategoryId != defaultCategoryId) {
     whereSql.push(' `category_id`= ? ')
     params.push(newCategoryId)
+  }
+
+  // 如果 tags 存在则添加至查询语句及参数列表中
+  if (newTags != defaultTags) {
+    const tagsArr = newTags.split(',')
+    if(tagsArr.length>0){
+      tagsArr.forEach(item=>{
+        whereSql.push(' `tags` LIKE ? ')
+        params.push(`%${item}%`)
+      })
+    }
+
   }
 
   // 如果 keyword 存在则添加至查询语句及参数列表中
@@ -109,13 +125,13 @@ router.get('/search', async (request, result) => {
   const whereSqlToStr = whereSql.length > 0 ? `WHERE ${whereSql.join(' AND ')}` : ''
 
   // 构建最终的查询数据的 SQL 语句和参数
-  const searchSql = `SELECT \`id\`,\`category_id\`,\`title\`,substr(\`content\`,0,250) AS \`content\`, \`create_time\` FROM \`blog\` ${whereSqlToStr} ORDER BY \`create_time\` DESC LIMIT ?, ?`
+  const searchSql = `SELECT \`id\`,\`category_id\`,\`tags\`,\`title\`,substr(\`content\`,0,250) AS \`content\`, \`create_time\` FROM \`blog\` ${whereSqlToStr} ORDER BY \`create_time\` DESC LIMIT ?, ?`
   const searchParams = [...params, (newPage - 1) * newPageSize, newPageSize]
-
+  
   // 构建最终的查询数据总数的 SQL 语句和参数
   const getSearchCountSql = `SELECT COUNT(*) FROM \`blog\` ${whereSqlToStr}`
   const getSearchCountParams = params
-
+  
   try {
     // 执行查询操作，并获取查询结果和查询数据总数
     const searchResult = await db.async.all(searchSql, searchParams)
@@ -230,7 +246,7 @@ router.put('/_token/update', async (request, result) => {
 // 必须参数: title
 // 可选参数: categoryId content
 router.post('/_token/add', async (request, result) => {
-  const { error, value } = schemaTitleCateCont.validate(request.body);
+  const { error, value } = schemaAddBlog.validate(request.body);
 
   if (error) {
     return result.status(400).send({
@@ -239,12 +255,12 @@ router.post('/_token/add', async (request, result) => {
     });
   }
 
-  const { title, categoryId, content } = value
+  const { title, categoryId, tags, content } = value
   const id = genid.NextId()
   const create_time = new Date().getTime()
 
-  const insertBlogSql = 'INSERT INTO `blog` (`id`, `title`, `category_id`, `content`, `create_time`) VALUES (?,?,?,?,?)'
-  const params = [id, title, categoryId, content, create_time]
+  const insertBlogSql = 'INSERT INTO `blog` (`id`, `title`, `category_id`, `tags`,`content`, `create_time`) VALUES (?,?,?,?,?,?)'
+  const params = [id, title, categoryId, tags, content, create_time]
 
   try {
     await db.async.run(insertBlogSql, params)
@@ -265,7 +281,35 @@ router.post('/_token/add', async (request, result) => {
 })
 
 
-// // GET 获取分类
+// GET 获取标签tags
+router.get('/get_tags', async (requset, result) => {
+  // const getAllTagsSql = `SELECT DISTINCT "tags" FROM "blog" WHERE "tags" IS NOT NULL;`
+  const getAllTagsSql = `SELECT DISTINCT "value" FROM "blog" CROSS JOIN json_each("tags") WHERE json_valid("tags");`
+  try {
+    const allTag = await db.async.all(getAllTagsSql, [])
+    const uniqueTagsArray = allTag.map((item) => item.value);
+    // const tagsArray = [];
+    // 展开为一维数组
+    // allTag.forEach(obj => tagsArray.push(...obj.tags.split(",")));
+    // 用set去重
+    // const uniqueTagsArray = [...new Set(tagsArray)];
+    result.send({
+      code: 200,
+      msg: '标签获取成功',
+      result: uniqueTagsArray,
+    })
+
+  } catch (err) {
+    result.send({
+      code: 500,
+      msg: '加载失败'
+    })
+    console.log(err);
+    // 抛出错误
+    throw err;
+  }
+})
+
 // // 必须参数: id
 // // 格式： /category/delete?id={id}
 // router.get('/get', async (request, result) => {

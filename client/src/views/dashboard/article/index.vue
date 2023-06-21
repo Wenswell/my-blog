@@ -25,6 +25,11 @@
         <EditPage :updateArticle="updateArticle" @changeTab="changeTab" @loadBlog="loadBlog" />
 
       </n-tab-pane>
+
+      <n-tab-pane name="md-add" tab="添加文章-MD">
+        <MdPage  :updateArticle="updateArticle" @changeTab="changeTab" @loadBlog="loadBlog" />
+
+      </n-tab-pane>
     </n-tabs>
   </div>
 </template>
@@ -38,9 +43,10 @@ import Pagination from "@/components/Pagination.vue";
 import ListPage from '@/components/ArticleList.vue'
 import AddPage from './components/article-add.vue'
 import EditPage from './components/article-edit.vue'
+import MdPage from './components/article-md.vue'
 
 // <!--———— 0. 顶部标签 ——————-->
-const tabValue = ref('list')
+const tabValue = ref('md-add')
 const changeTab = (type) => {
   tabValue.value = type
 }
@@ -67,6 +73,7 @@ const pageInfo = reactive({
   count: 0,
   pageCount: 0,
   categoryId: 0,
+  tags:"",
   keyword: '',
 })
 // 分页跳转
@@ -83,6 +90,8 @@ let updateArticle = reactive({
   categoryId: undefined,
   title: '',
   content: '',
+  tags:"",
+  description:'',
 })
 // 获取要更新的文章信息并去更新页面
 const getUpdateArticleId = async (id) => {
@@ -90,7 +99,7 @@ const getUpdateArticleId = async (id) => {
   console.log("result", result.data.result[0])
   console.log("result.data.result[0]", result.data.result[0])
   updateArticle = result.data.result[0]
-  changeTab('update')
+  changeTab('md-add')
 }
 
 onMounted(() => {

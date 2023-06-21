@@ -1,9 +1,10 @@
 @import "./_variables.scss";
 
-// 用于按钮
+// 用于按钮样式
 .center--text {
   display: flex;
   align-items: center;
+  text-align: center;
   justify-content: center;
   user-select: none;
   -webkit-user-select: none;
@@ -11,7 +12,7 @@
 }
 
 // 基础 grid 布局
-.grid--margin{
+.grid--margin {
   display: grid;
   grid-gap: $gap;
   margin: $gap auto;
@@ -39,12 +40,12 @@ body {
   height: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+  background: #f1f1f1;
 }
 ::-webkit-scrollbar-thumb {
-  background: #888; 
+  background: #888;
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #555; 
+  background: #555;
 }

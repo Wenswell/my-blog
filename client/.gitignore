@@ -1,3 +1,6 @@
+src/views/test/
+src/views/test/*
+
 # Logs
 logs
 *.log
