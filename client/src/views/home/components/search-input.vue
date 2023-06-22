@@ -1,24 +1,35 @@
 <template>
-  <n-input clearable v-model:value="keyword" @keyup.enter="toSearch" class="search-input" placeholder="搜索">
+  <n-input :loading="loading" clearable v-model:value="keyword" @keyup.enter="toSearch" class="search-input"
+    placeholder="按下回车键搜索">
     <template #suffix>
-      <n-icon class="search-icon" @click="toSearch" :component="Search" />
+      <n-icon :class="{ hidding: loading }" class="search-icon" @click="toSearch" :component="Search" />
     </template>
   </n-input>
 </template>
 
 <script setup>
 import { Search } from "@vicons/ionicons5";
-const message = inject('message')
-const emit = defineEmits(['search-keyword'])
+import { ref } from "vue";
+// const message = inject('message')
 
-let keyword = ref('')
+// 同步 关键词 至 父组件
+const { valueModel } = defineProps({
+  valueModel: { type: String }
+})
+
+const emit = defineEmits(['update:value-model', 'search-keyword'])
+let keyword = ref(null)
+// watchEffect(() => {
+//   emit('update:value-model', keyword.value);
+// });
+
 let loading = ref(false)
 let timer = null
 const toSearch = () => {
-  if (!keyword.value) message.info('全部内容')
+  // if (!keyword.value) message.info('全部内容')
   if (timer) return
   loading.value = true
-  emit('search-keyword', keyword)
+  emit('update:value-model', keyword.value);
   timer = setTimeout(async () => {
     // 这里是需要节流的代码
     loading.value = false
@@ -33,6 +44,18 @@ const toSearch = () => {
 
   .search-icon {
     cursor: pointer;
+    z-index: 2;
+    margin-right: -15px;
+    padding-right: 5px 10px;
+    transition: all 300ms;
+
+    &.hidding {
+      zoom: 0.1;
+      opacity: 0.1;
+    }
+
+    &:hover {
+      color: $primary-color;
+    }
   }
-}
-</style>
+}</style>

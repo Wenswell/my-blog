@@ -1,5 +1,10 @@
 <template>
   <!-- 这里是主要内容 -->
+  tagSet: {{ tagSet }}
+  <br>
+  keywordRef: {{ keywordRef }}
+  <br>
+  isSearchAll: {{ isSearchAll }}
   <ArticleList :blogList="blogList" />
   <div class="no-blog">{{ noBlog }}</div>
   <Pagination v-show="pageInfo.pageCount > 1 && blogList.length" :pageInfo="pageInfo" @toPage="toPage" />
@@ -14,6 +19,12 @@ import { computed, onMounted, reactive, ref } from "vue";
 // import MainAsideBox from "@/components/MainAsideBox.vue";
 // import { PricetagsOutline } from "@vicons/ionicons5";
 
+const props = defineProps({
+  tagSet: { type: Object, },
+  keywordRef: { type: Object, },
+  categoryId: { type: Number, },
+  isSearchAll: { type: Boolean, },
+})
 
 // 文章预览列表
 let blogList = ref([])
@@ -51,14 +62,18 @@ const pageInfo = reactive({
   tags: [],
   keyword: '',
 })
-// // 转一份 set 方便查找去重
-// const tagSet = computed(() => {
-//   return new Set(pageInfo.tags)
-// })
 // 分页跳转
 const toPage = async (page) => {
   if (page == pageInfo.page || page > pageInfo.pageCount || page <= 0) return
   pageInfo.page = page
+  loadBlog()
+}
+
+// 清空条件，搜索全部
+const searchAll = () => {
+  pageInfo.categoryId = 0
+  pageInfo.tags = []
+  pageInfo.keyword = ''
   loadBlog()
 }
 

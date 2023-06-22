@@ -2,14 +2,13 @@
   <MainAsideBox>
     <template v-slot:main>
       <!-- 这里是主要内容 -->
-      <ArticleList :blogList="blogList" />
-      <div class="no-blog">{{ noBlog }}</div>
-      <Pagination v-show="pageInfo.pageCount > 1 && blogList.length" :pageInfo="pageInfo" @toPage="toPage" />
+      <TESTShowArticleList :tagSet="tagSet" :keywordRef="keywordRef" :isSearchAll="isSearchAll" />
+
     </template>
     <template v-slot:aside>
       <!-- 这里是侧边栏内容 -->
       <div class="search-box">
-        <SearchInput @search-keyword="searchBlog" />
+        <SearchInput v-model:valueModel="keywordRef" />
         <div class="tags-box">
           <div @click="searchAll" class="tag-title center--text">
             <n-icon color="gray" size="1rem" :component="PricetagsOutline" />
@@ -27,91 +26,39 @@
 
 <script setup>
 const axios = inject('axios')
-const message = inject('message')
 import SearchInput from './components/search-input.vue'
-import Pagination from "@/components/Pagination.vue";
 import MainAsideBox from "@/components/MainAsideBox.vue";
+import TESTShowArticleList from '@/components/ShowArticleList.vue'
+
 import { computed, onMounted, reactive, ref } from "vue";
 import { PricetagsOutline } from "@vicons/ionicons5";
 
-
-// 文章预览列表
-let blogList = ref([])
-let noBlog = ref('')
-// 加载文章列表
-const loadBlog = async () => {
-  noBlog.value = ''
-
-  const result = await axios.get(`/blog/search?categoryId=${pageInfo.categoryId}&tags=${pageInfo.tags}&keyword=${pageInfo.keyword}&page=${pageInfo.page}&pageSize=${pageInfo.pageSize}`)
-  if (result.data.code === 200) {
-    blogList.value = result.data.result.list
-    pageInfo.count = result.data.result.count
-    pageInfo.pageCount = pageInfo.pageSize ? Math.ceil(pageInfo.count / pageInfo.pageSize) : 0
-
-
-    if ((pageInfo.keyword || pageInfo.tags.length) && result.data.result.count) {
-      // 搜索完成
-      message.success(`共 ${pageInfo.count} 条结果`)
-    } else if (pageInfo.keyword || pageInfo.tags.length) {
-      // 没有结果
-      noBlog.value = '没有结果'
-    }
-
-  } else {
-    message.error(result.data.msg)
-  }
+let isSearchAll = ref(false)
+const searchAll = () => {
+  isSearchAll.value = true
 }
-// 列表分页信息
-const pageInfo = reactive({
-  page: 1,
-  pageSize: 10,
-  count: 0,
-  pageCount: 0,
-  categoryId: 0,
-  tags: [],
-  keyword: '',
-})
+
+// 绑定至子组件用于搜索
+const keywordRef = ref(null)
+// 绑定至子组件用于搜索
+const tagsRef = ref([])
 // 转一份 set 方便查找去重
 const tagSet = computed(() => {
-  return new Set(pageInfo.tags)
+  return new Set(tagsRef.value)
 })
-// 分页跳转
-const toPage = async (page) => {
-  if (page == pageInfo.page || page > pageInfo.pageCount || page <= 0) return
-  pageInfo.page = page
-  loadBlog()
-}
-// 根据关键词搜索文章
-const searchBlog = (keyword) => {
-  pageInfo.keyword = keyword
-  loadBlog()
-}
-// 根据标签过滤文章
+
+// 用于展示、点击添加
+const getTags = ref([])
 const onAddTag = (tag) => {
   const uniqueTags = tagSet.value
   // 已选中则去除，未选中则添加
   uniqueTags.has(tag) ? uniqueTags.delete(tag) : uniqueTags.add(tag);
-  pageInfo.tags = [...uniqueTags];
+  tagsRef.value = [...uniqueTags];
   loadBlog();
 }
-const getTags = ref([])
-// 加载标签
-const loadTags = async () => {
-  const result = await axios.get('/blog/get_tags')
-  getTags.value = result.data.result
-}
-
-// 清空条件，搜索全部
-const searchAll = () => {
-  pageInfo.categoryId = 0
-  pageInfo.tags = []
-  pageInfo.keyword = ''
-  loadBlog()
-}
-
 onMounted(() => {
-  loadBlog()
-  loadTags()
+  // 加载标签
+  axios.get('/blog/get_tags').then(result => getTags.value = result.data.result)
 })
 </script>
 

@@ -167,3 +167,19 @@ app.use(multer({
   )) as blog_all_info_arr, -- FROM等的前面也不能有,
 FROM blog, 
 ```
+
+
+## 绑定props的固定格式
+
+父组件
+```vue
+<someComponent v-model:valueModel="someRef"  />
+```
+子组件
+```js
+const { valueModel } = defineProps({
+  valueModel: { type: String }
+})
+const emit = defineEmits(['update:value-model'])
+emit('update:value-model', keyword.value);
+```
