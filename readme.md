@@ -156,6 +156,9 @@ app.use(multer({
 
 
 
+
+
+
 ## SQLite语法
 
 不能有多余的逗号`,`
@@ -166,4 +169,19 @@ app.use(multer({
   'last_edit_time', blog.last_edit_time, -- 比如)的前面不能有,
   )) as blog_all_info_arr, -- FROM等的前面也不能有,
 FROM blog, 
+```
+
+## 绑定props的固定格式
+
+父组件
+```vue
+<someComponent v-model:valueModel="someRef"  />
+```
+子组件
+```js
+const { valueModel } = defineProps({
+  valueModel: { type: String }
+})
+const emit = defineEmits(['update:value-model'])
+emit('update:value-model', keyword.value);
 ```
