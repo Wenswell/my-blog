@@ -1,33 +1,60 @@
 <template>
-  <div class="blog-box">
-    <!--———— 1.2 文章列表 摘要 ——————-->
-    <div class="blog-card" :style="{ cursor: (showModel ? 'pointer' : 'default') }" @click="toDetail(blog.id)"
+  <div class="box-blog">
+    <!--———— 1.2 文章卡片列表 ——————-->
+    <button class="blog plain" :style="{ cursor: (editModel ? 'default' : 'pointer') }" @click="toDetail(blog.id)"
       v-for="(blog, index) in blogList">
-      <!--———— 1.2.1 摘要 标题 ——————-->
-      <n-card :title="blog.title">
-        <!--———— 1.2.2 摘要 开头内容 ——————-->
-        <div class="content">{{ removeStyles(blog.content) }}</div>
-        <template #footer>
-          <div class="box-footer grid--margin">
-            <!--———— 1.2.3 摘要 发布时间 ——————-->
-            <div>发布时间：{{ getFormatTime(blog.create_time) }}</div>
-            <!--———— 1.2.3 摘要 修改 删除 ——————-->
-            <template v-if="!showModel">
-              <n-button @click="toUpdate(blog.id)" tertiary type="info">修改</n-button>
-              <n-button @click="onDelete(blog.id, blog.title)" tertiary type="error">删除</n-button>
-            </template>
-          </div>
-        </template>
-      </n-card>
-    </div>
+
+      <!--———— 1.2.1 文章 标题 ——————-->
+      <div class="blog-top-title" v-text="blog.title" />
+      <div class="blog-up">
+        <!--———— 1.2.2 文章 分类 ——————-->
+        <!-- <span class="blog-up-category" v-text="blog.type" /> -->
+        <span class="blog-up-category">
+          <n-icon class="icon" size="1rem" :component="FolderOpenOutline" />
+          <span @click.stop="message.info(blog.type)" class="item-text" v-text="blog.type" />
+        </span>
+        <span style="opacity: 0.5;" v-if="!blog.type">法外之徒</span>
+        <!--———— 1.2.3 文章 tags ——————-->
+        <span class="blog-up-tags" v-if="blog.tags.length">
+          <n-icon class="icon" size="1rem" :component="PricetagsOutline" />
+          <span @click.stop="message.info(item)" class="tags-item item-text" v-for="item in blog.tags" v-text="item" />
+        </span>
+      </div>
+      <!--———— 1.2.4 文章 desc ——————-->
+      <div class="blog-desc" v-text="blog.description" />
+      <!--———— 1.2.5 文章 发布时间 ——————-->
+      <div class="blog-time">
+        {{ formatTimestamp(blog.create_time) }}
+        <!--———— 1.2.6 文章 修改时间 ——————-->
+        <span v-if="blog.last_edit_time" class="blog-time-edit">
+          ( updated {{ formatTimestamp(blog.last_edit_time) }} )
+        </span>
+        <br>
+      </div>
+
+      <template v-if="editModel">
+        <n-button @click="toUpdate(blog.id)" tertiary type="info">修改</n-button>
+        <n-button @click="onDelete(blog.id, blog.title)" tertiary type="error">删除</n-button>
+      </template>
+    </button>
   </div>
 </template>
 
 <script setup>
 import { onMounted } from 'vue';
+import { FolderOpenOutline, PricetagsOutline } from "@vicons/ionicons5";
 
 
-const { showModel } = defineProps({
+// 格式化显示时间
+const dayjs = inject("dayjs")
+const formatTimestamp = (timestamp) => {
+  const now = dayjs();
+  const date = dayjs(timestamp);
+  const formatString = now.year() === date.year() ? 'MMM D' : 'YY年M月D日';
+  return date.format(formatString);
+}
+
+const { editModel } = defineProps({
   blogList: {
     type: Object,
     required: true
@@ -35,14 +62,15 @@ const { showModel } = defineProps({
   tabValue: {
     type: String,
   },
-  showModel: {
+  editModel: {
     type: Boolean,
+    default: false
   }
 })
 
 onMounted(() => {
   // message.success(1)
-  if (!showModel) {
+  if (editModel) {
     toDetail = () => { }
   }
 })
@@ -52,18 +80,6 @@ const router = useRouter()
 let toDetail = (id) => {
   router.push(`/detail/${id}`)
 }
-
-// 将HTML转为txt，移除样式
-const removeStyles = (html) => {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
-  return doc.body.textContent || '';
-}
-// 时间戳转本地时间显示
-const getFormatTime = ((timestamp) => {
-  return new Date(timestamp).toLocaleString()
-})
-
 
 // 前往更新页面
 const emit = defineEmits(['load-blog', 'change-tab', 'update-article'])
@@ -96,35 +112,76 @@ const onDelete = async (id, title) => {
 </script>
 
 <style lang="scss" scoped>
-.blog-box {
+// 博客列表容器
+.box-blog {
   display: flex;
   flex-direction: column;
   gap: $gap;
-  padding-bottom: $gap;
 }
 
-.blog-card {
-  border: 1px solid $light-grey;
-  border-radius: 4px;
-  transition: 300ms;
+// 博客列表卡片s
+.blog {
+  display: flex;
+  flex-direction: column;
+  text-align: start;
+  gap: $s-gap;
+  padding: $s-gap;
+  color: $clr-text-pri;
+  background-color: $clr-back;
+  border: $mico-gap solid transparent;
+  transition: all 300ms;
 
   &:hover {
-    border-color: $primary-color;
+    border: $mico-gap solid $primary-color;
   }
-}
 
-.content {
-  // outline: solid;
-  min-height: 2.8rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
+  // 卡片 博客标题
+  &-top-title {
+    font-size: $fs-big;
+    line-height: $fs-large;
+  }
 
-.box-footer {
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  margin: 0;
+  // 卡片 博客分类、tag
+  &-up {
+    display: flex;
+    z-index: 2;
+
+    // 卡片 博客分类
+    &-category {
+      display: flex;
+      align-items: center;
+    }
+
+    // 卡片 博客tags
+    &-tags {
+      display: flex;
+      align-items: center;
+      margin-inline: $s-gap;
+
+      .tags-item {
+        margin-right: $s-gap;
+
+        &::before {
+          content: '#';
+          opacity: 0.5;
+        }
+      }
+    }
+
+    .item-text:hover {
+      color: $primary-color;
+      text-decoration: underline $primary-color solid;
+    }
+
+    .icon {
+      margin-right: $mico-gap;
+    }
+
+  }
+
+  &-desc {
+    color: $clr-text-sec;
+  }
+
 }
 </style>

@@ -1,14 +1,13 @@
 <template>
   <nav class="nav" :class="{ 'hidden': isNavHidden }">
     <span class="nav-title">
-      网站标题 {{ isNavHidden }}s
+      网站标题 {{ isNavHidden }}
     </span>
     <div class="nav-right">
-      <button class="nav-right-item" @click="router.push(item.href)" v-for="item in topBarItem">
+      <button class="nav-right-item plain" @click="router.push(item.href)" v-for="item in topBarItem">
         <n-icon class="nav-right-item-icon" size="1rem" :component="item.icon" />
         {{ item.title }}
       </button>
-
     </div>
   </nav>
 </template>
@@ -48,11 +47,11 @@ const {isNavHidden} = defineProps({
   width: 100%;
   height: $header-height;
   padding-inline: $gap;
-  background: $light;
+  background: $clr-back;
   font-size: 1rem;
 
   &-title {
-    font-size: $fs--big;
+    font-size: $fs-big;
     position: absolute;
   }
 
@@ -63,13 +62,11 @@ const {isNavHidden} = defineProps({
 
     &-item {
       @extend .center--text;
-      gap: 2px;
+      gap: $mico-gap;
       min-width: 5rem;
       transition: all 350ms ease;
       position: relative;
       z-index: 1;
-      background-color: $light;
-      border: none;
 
       &::before {
         content: '';

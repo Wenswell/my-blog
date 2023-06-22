@@ -4,16 +4,16 @@
   <div class="pagination grid--margin">
     <!--———— 1.1 分页器 左箭头 ——————-->
     <button :disabled="pageInfo.page <= 1" :class="{ 'disable': pageInfo.page <= 1 }"
-      class="pagination-arrow center--text" @click="handleClick(pageInfo.page - 1)"><n-icon size="1.1rem"
+      class="pagination-arrow center--text plain" @click="handleClick(pageInfo.page - 1)"><n-icon size="1.1rem"
         :component="ArrowBack" /></button>
     <!--———— 1.3 分页器 右箭头 ——————-->
     <button :disabled="pageInfo.page >= pageInfo.pageCount" :class="{ 'disable': pageInfo.page >= pageInfo.pageCount }"
-      class="pagination-arrow center--text" @click="handleClick(pageInfo.page + 1)"><n-icon size="1.1rem"
+      class="pagination-arrow center--text plain" @click="handleClick(pageInfo.page + 1)"><n-icon size="1.1rem"
         :component="ArrowForward" /></button>
 
     <!--———— 1.2 分页器 页数 ——————-->
-    <button :class="{ active: page.n == pageInfo.page }" class="pagination-item center--text" @click="handleClick(page.n)"
-      v-for="page in createPaginator">{{ page.d }}</button>
+    <button :class="{ active: page.n == pageInfo.page }" class="pagination-item center--text plain"
+      @click="handleClick(page.n)" v-for="page in createPaginator">{{ page.d }}</button>
   </div>
 </template>
 
@@ -152,12 +152,12 @@ const createPaginator = computed(() => {
 
 <style lang="scss" scoped>
 .pagination {
-  grid-template-columns: repeat(auto-fill, minmax($side-length, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax($l-gap, 1fr));
 
   >* {
-    background-color: $light;
-    width: $side-length;
-    height: $side-length;
+    background-color: $clr-back;
+    width: $l-gap;
+    height: $l-gap;
   }
 
 
@@ -180,7 +180,7 @@ const createPaginator = computed(() => {
   // 左右 箭头
   &-arrow {
     transition: all 300ms;
-    border: 1px solid $light-grey;
+    border: 1px solid $clr-back-grey;
 
     // 禁用样式
     &.disable {
@@ -188,7 +188,7 @@ const createPaginator = computed(() => {
       // cursor: not-allowed;
       pointer-events: none;
       border: none;
-      background-color: $light-grey;
+      background-color: $clr-back-grey;
     }
 
     &:hover {

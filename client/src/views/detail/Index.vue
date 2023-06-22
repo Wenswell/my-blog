@@ -44,7 +44,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .blog-box {
-  background-color: $light;
+  background-color: $clr-back;
   padding: $gap;
   margin-block: $gap;
 }

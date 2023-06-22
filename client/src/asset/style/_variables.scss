@@ -1,19 +1,25 @@
 $primary-color: #18a058;
 $primary-transp: #17a1570d;
-$light-grey:#ddd;
+$clr-back-grey:#ddd;
 $white:#fff;
-$light:#fff;
-$dark:#000;
+$clr-back:#fff;
+$clr-text-pri:#000;
+$clr-text-sec:#555;
 
+$s-gap: 0.5rem;
 $gap: 1rem;
-$side-length: 2rem;
+$l-gap: 2rem;
 
-
+$mico-gap:2px;
 
 
 $header-height: 4rem;
 $footer-height: 6rem;
-$main-width: 960px;
+$main-width: 60rem;
 $content-gap: 2rem;
 
-$fs--big:2rem;
+$fs-big:1.35rem;
+
+$fs-large:1.55rem;
+
+$fs-huge:2rem;
