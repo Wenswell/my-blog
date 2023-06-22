@@ -156,14 +156,3 @@ app.use(multer({
 
 
 
-## SQLite语法
-
-不能有多余的逗号`,`
-
-```sql
-((
-  'create_time', blog.create_time,
-  'last_edit_time', blog.last_edit_time, -- 比如)的前面不能有,
-  )) as blog_all_info_arr, -- FROM等的前面也不能有,
-FROM blog, 
-```

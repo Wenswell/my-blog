@@ -2,7 +2,7 @@
   <MainAsideBox>
     <template v-slot:main>
       <!-- 这里是主要内容 -->
-      <ArticleList :blogList="blogList" />
+      <ArticleList :blogList="blogList" :showModel="true" />
       <div class="no-blog">{{ noBlog }}</div>
       <Pagination v-show="pageInfo.pageCount > 1 && blogList.length" :pageInfo="pageInfo" @toPage="toPage" />
     </template>
@@ -15,9 +15,9 @@
             <n-icon color="gray" size="1rem" :component="PricetagsOutline" />
             标签
           </div>
-          <span @click="onAddTag(tag.name)" :class="{ active: tagSet.has(tag.name) }" class="tag center--text"
+          <span @click="onAddTag(tag)" :class="{ active: tagSet.has(tag) }" class="tag center--text"
             v-for="tag in getTags">
-            {{ tag.name }}
+            {{ tag }}
           </span>
         </div>
       </div>
@@ -39,24 +39,25 @@ import { PricetagsOutline } from "@vicons/ionicons5";
 let blogList = ref([])
 let noBlog = ref('')
 // 加载文章列表
-const loadBlog = async () => {
+const loadBlog = async (isSearch) => {
   noBlog.value = ''
-
   const result = await axios.get(`/blog/search?categoryId=${pageInfo.categoryId}&tags=${pageInfo.tags}&keyword=${pageInfo.keyword}&page=${pageInfo.page}&pageSize=${pageInfo.pageSize}`)
   if (result.data.code === 200) {
     blogList.value = result.data.result.list
     pageInfo.count = result.data.result.count
     pageInfo.pageCount = pageInfo.pageSize ? Math.ceil(pageInfo.count / pageInfo.pageSize) : 0
 
-
-    if ((pageInfo.keyword || pageInfo.tags.length) && result.data.result.count) {
+    if (isSearch && result.data.result.count) {
       // 搜索完成
       message.success(`共 ${pageInfo.count} 条结果`)
-    } else if (pageInfo.keyword || pageInfo.tags.length) {
+    } else if (isSearch) {
       // 没有结果
-      noBlog.value = '没有结果'
+      message.warning('没有结果，请更换搜索关键词')
+      noBlog.value = '没有结果，请更换搜索关键词'
     }
 
+    // message.success(result.data.msg)
+    // return result.data.result.count
   } else {
     message.error(result.data.msg)
   }
@@ -118,11 +119,11 @@ onMounted(() => {
 <style lang="scss" scoped>
 .no-blog {
   @extend .center--text;
-  cursor: auto;
-  font-size: $fs-big;
-  color: $clr-text-pri;
+  font-size: $fs--big;
+  color: $dark;
   font-weight: bold;
-  -webkit-text-stroke: 1px $clr-back;
+  cursor: auto;
+  -webkit-text-stroke: 1px $light;
 }
 
 .tags-box {
@@ -131,13 +132,14 @@ onMounted(() => {
 
   .tag-title {
     height: $gap*2;
-    padding-left: $s-gap;
-    gap: $s-gap;
+    padding-left: $gap/2;
+    gap: $gap/2;
     justify-content: normal;
-    background-color: $clr-back;
+    background-color: $light;
     overflow: hidden;
     position: relative;
     transition: transform 200ms;
+
 
     &:active {
       background-color: $primary-transp;
@@ -148,7 +150,7 @@ onMounted(() => {
       transition-property: all, color;
       transition-duration: 50ms, 150ms;
       content: '点击移除全部标签 & 清空搜索栏';
-      color: $clr-back-grey;
+      color: $light-grey;
       position: absolute;
       left: 25%;
       white-space: nowrap;
@@ -156,19 +158,19 @@ onMounted(() => {
     }
 
     &:hover::after {
-      color: $clr-text-pri;
+      color: $dark;
       content: '移除全部标签 & 清空搜索栏 (查看全部)';
     }
   }
 
   .tag {
-    padding-inline: $s-gap;
+    padding-inline: $gap/2;
     margin-top: $gap;
     margin-right: 1rem;
     display: inline-block;
-    background-color: $clr-back;
+    background-color: $light;
     transition: all 200ms;
-    border: $mico-gap solid transparent;
+    border: 2px solid transparent;
 
     &:hover {
       color: $primary-color;
@@ -182,7 +184,7 @@ onMounted(() => {
 
     &.active {
       background-color: $primary-color;
-      color: $clr-back;
+      color: $light;
     }
   }
 }

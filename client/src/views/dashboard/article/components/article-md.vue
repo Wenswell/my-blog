@@ -1,16 +1,22 @@
 <template>
+  <div class="test" style="position: fixed; right: 1rem;top: 1rem;background-color:antiquewhite;">
+    article-md.vue - my-blog - Visual Studio Code [管理员]addArticle.tags{{ addArticle.tags }}
+    <br>
+    updateArticle{{ updateArticle.tags }}
+  </div>
 
   <div class="top">
     <div class="top-left">
       <n-input class="top-title" v-model:value="addArticle.title" placeholder="标题" />
-      <n-input class="top-title" v-model:value="addArticle.description" placeholder="标sss题" />
+      <n-input v-model:value="addArticle.description" type="textarea" :maxlength="200" show-count
+        placeholder="文章描述，不要太长" />
     </div>
     <div class="top-right">
       <n-select class="top-category" v-model:value="addArticle.categoryId" :options="categoryOptions"
         placeholder="选择分类" />
 
-      <TagSelect class="selector" :updateOriginTag="updateArticle.tags" v-model:valueModel="addArticle.tags" />
-
+      <TagSelect class="selector" v-model:valueModel="addArticle.tags" />
+      
       <n-button type="primary" :disabled="!addArticle.title.length" class="top-btn" @click="onAdd">提交</n-button>
     </div>
   </div>
@@ -24,7 +30,7 @@ import { MdEditor } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 import TagSelect from "@/components/TagSelect.vue";
 const message = inject('message')
-const axios = inject('axios')
+
 
 const emit = defineEmits(['load-blog', 'change-tab'])
 const { updateArticle } = defineProps({
@@ -35,12 +41,11 @@ const { updateArticle } = defineProps({
 })
 
 let addArticle = reactive({
-  id: 0,
   title: '',
   categoryId: undefined,
   tags: '',
   content: '## 二级标题',
-  description: '',
+  description:'',
 })
 
 // 任何更改
@@ -71,6 +76,7 @@ const onSave = (v, h) => {
   }
 }
 // 上传图片
+const axios = inject('axios')
 const onUploadImg = async (files, callback) => {
   const res = await Promise.all(
     files.map((file) => {
@@ -101,44 +107,21 @@ const onUploadImg = async (files, callback) => {
 };
 
 
-// 删除已经上传的文章内容
-const resetInput = () => {
-  addArticle.id = 0
-  addArticle.title = ''
-  addArticle.categoryId = undefined
-  addArticle.tags = ''
-  addArticle.content = '## 二级标题'
-  addArticle.description = ''
-  emit('load-blog')
-  emit('change-tab', 'list')
-}
-
 
 const onAdd = async () => {
   try {
-    if (Boolean(addArticle.id)) {
-      const { id, title, categoryId, content, description, ...rest } = addArticle
-      const sendUpdatedBlog = { id, title, categoryId, content, description }
-
-      const result = await axios.put('/blog/_token/update', sendUpdatedBlog)
-      if (result.data.code === 200) {
-        message.success(`文章 [ ${addArticle.title} ] ${result.data.msg}`)
-        resetInput()
-      } else {
-        message.error(result.data.msg)
-      }
+    const result = await axios.post('/blog/_token/add', addArticle)
+    // console.log("addArticle", addArticle)
+    if (result.data.code === 200) {
+      message.success(`文章 [ ${addArticle.title} ] ${result.data.msg}`)
+      addArticle.categoryId = undefined
+      addArticle.title = ''
+      addArticle.content = ''
+      emit('load-blog')
+      emit('change-tab', 'list')
     } else {
-      const { id, ...rest } = addArticle;
-      const result = await axios.post('/blog/_token/add', { ...rest })
-
-      if (result.data.code === 200) {
-        message.success(`文章 [ ${addArticle.title} ] ${result.data.msg}`)
-        resetInput()
-      } else {
-        message.error(result.data.msg)
-      }
+      message.error(result.data.msg)
     }
-
   } catch (error) {
     console.log("error", error)
     message.error(error.response.data.msg)
@@ -159,13 +142,11 @@ const loadCategory = async () => {
 
 onMounted(() => {
   loadCategory()
-  // 如果ID不是默认的0说明是修改文章
-  if (Boolean(updateArticle?.id)) {
-    console.log("updateArticle", updateArticle)
-    console.log("addArticle", addArticle)
-    // addArticle = { ...addArticle, ...updateArticle }
-    Object.assign(addArticle, updateArticle)
-    console.log("addArticle", addArticle)
+  if(updateArticle?.tags){
+    const stringTag = updateArticle.tags
+    const JSONtoArray = JSON.parse(stringTag)
+    addArticle = updateArticle
+    addArticle.tags = JSONtoArray
   }
 })
 </script>
@@ -176,8 +157,8 @@ onMounted(() => {
   margin-block: $gap;
 
   >* {
-    display: flex;
-    gap: $gap;
+  display: flex;
+  gap: $gap;
 
     flex: 1;
     flex-direction: column;

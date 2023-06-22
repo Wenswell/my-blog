@@ -29,8 +29,6 @@ axios.interceptors.request.use((config)=>{
   return config
 })
 
-import dayjs from 'dayjs' //import dayjs in your main.js
-app.provide('dayjs', dayjs)
 
 app.provide('axios', axios)
 app.provide('message', message)
