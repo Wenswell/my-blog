@@ -171,6 +171,7 @@ app.use(multer({
 FROM blog, 
 ```
 
+
 ## 绑定props的固定格式
 
 父组件
