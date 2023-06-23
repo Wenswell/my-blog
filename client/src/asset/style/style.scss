@@ -16,6 +16,45 @@
   border: none;
 }
 
+// button专用 把按钮当span用
+.plain {
+  background-color: $clr-back;
+  border: none;
+}
+
+// 基础选中效果
+
+.active-effect{
+  border: $mico-gap solid transparent;
+  color: $clr-text-pri;
+  background-color: $clr-back;
+  transition: all 200ms;
+  
+  &:hover {
+    color: $primary-color;
+    border-color: $primary-transp-0;
+  }
+
+  &:active {
+    background-color: $primary-transp-0;
+    transform: scale(0.9);
+  }
+
+  &.active {
+    background-color: $primary-color;
+    color: $clr-back;
+  }
+}
+
+.active-effect-enlarge{
+  @extend .active-effect;
+  &:active {
+    background-color: $primary-transp-0;
+    transform: scale(1.1);
+  }
+}
+
+
 // 基础 grid 布局
 .grid--margin {
   display: grid;
@@ -23,19 +62,25 @@
   margin: $gap auto;
   align-items: center;
 }
-html {
-  overflow-y: scroll;
-}
+
+
+
+
+
+
+// 滚动条
+// html {
+//   overflow-y: scroll;
+// }
+
+// :root body {
+//   position: absolute;
+// }
 
 :root {
   overflow-y: auto;
   overflow-x: hidden;
 }
-
-:root body {
-  position: absolute;
-}
-
 body {
   width: 100vw;
   overflow: hidden;

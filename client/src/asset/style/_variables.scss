@@ -1,22 +1,32 @@
 $primary-color: #18a058;
-$primary-transp: #17a1570d;
-$clr-back-grey:#ddd;
-$white:#fff;
-$clr-back:#fff;
-$clr-text-pri:#000;
-$clr-text-sec:#555;
+$primary-transp-2: rgba($primary-color,.15);
+$primary-transp-0: rgba($primary-color,.05);
+$clr-back-grey: #ddd;
+$white: #fff;
+$clr-back: #fff;
+$clr-text-pri: #000;
+$clr-text-sec: #555;
 
+
+$s-gap: 0.5rem;
 $s-gap: 0.5rem;
 $gap: 1rem;
 $l-gap: 2rem;
+$mico-gap: 2px;
 
-$mico-gap:2px;
+
 
 
 $header-height: 4rem;
+// 方便在JS中使用
+:root {
+  --header-height: 4rem;
+}
 $footer-height: 6rem;
 $main-width: 60rem;
 $content-gap: 2rem;
+$main-width: 60rem;
+
 
 $fs-big:1.35rem;
 

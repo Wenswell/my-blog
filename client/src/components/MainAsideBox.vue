@@ -27,7 +27,8 @@ const { defalut } = defineProps({
   padding-top: $header-height + $gap;
   max-width: $main-width;
   margin-inline: auto;
-  min-height: calc(100vh - #{$footer-height});
+  min-height: calc(100vh - #{$footer-height} + 1px);
+  // min-height: calc(100vh - #{$footer-height});
   // min-height: calc(100vh - #{$gap} - #{$header-height} - #{$footer-height});
 }
 
@@ -39,11 +40,12 @@ const { defalut } = defineProps({
   .center-aside {
     display: flex;
     flex-direction: column;
-
+    max-width: 20rem;
   }
 
   .center-main {
     width: 100%;
+    margin-bottom: $gap;
   }
 
 }

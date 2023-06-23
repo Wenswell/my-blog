@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { db, genid } = require('@db')
+const { updateTables } = require('@/router/default/updateStatistics')
 const Joi = require('joi');
 
 const schemaId = Joi.object({
@@ -37,7 +38,7 @@ const schemaUpdateBlog = Joi.object({
 
  */
 
-// GET 搜索文章
+// GET 单篇文章详情
 // 必须参数: id
 router.get('/detail', async (request, result) => {
 
@@ -51,13 +52,16 @@ router.get('/detail', async (request, result) => {
     const detailResult = await db.async.all(detailSql, [id])
     console.log("detailResult", detailResult)
     // 前端统一使用categoryId
-    const { category_id, ...rest } = detailResult[0];
-    const updatedDetailResult = [{ categoryId: category_id, ...rest }];
+    let updatedDetailResult
+    if (detailResult?.category_id) {
+      const { category_id, ...rest } = detailResult[0];
+      updatedDetailResult = [{ categoryId: category_id, ...rest }];
+    }
     // console.log("updatedDetailResult", updatedDetailResult)
     result.send({
       code: 200,
       msg: '加载成功',
-      result: updatedDetailResult
+      result: updatedDetailResult || detailResult
     })
 
 
@@ -102,8 +106,12 @@ router.get('/search', async (request, result) => {
 
   // 如果 categoryId 存在则添加至查询语句及参数列表中
   if (newCategoryId != defaultCategoryId) {
-    whereSql.push(' `category_id`= ? ')
-    params.push(newCategoryId)
+    // if (newCategoryId == -1) {
+      // whereSql.push(' `category_id` IS NULL ')
+    // } else {
+      whereSql.push(' `category_id`= ? ')
+      params.push(newCategoryId)
+    // }
   }
 
   // 如果 tags 存在则添加至查询语句及参数列表中
@@ -113,8 +121,9 @@ router.get('/search', async (request, result) => {
 
     if (tagsArr.length > 0) {
       tagsArr.forEach(item => {
-        whereSql.push(' `tags` LIKE ? ')
-        params.push(`%${item}%`)
+        whereSql.push('( `tags` LIKE ? OR  `tags` LIKE ? )')
+        params.push(`%"${item}",%`)
+        params.push(`%,"${item}"%`)
       })
     }
 
@@ -207,7 +216,7 @@ router.delete('/_token/delete', async (request, result) => {
   const deleteBlogSql = 'DELETE FROM `blog` WHERE `id` = ?'
   try {
     await db.async.run(deleteBlogSql, [id])
-    await syncUpdateTagBlogSumTable()
+    await updateTables()
     result.send({
       code: 200,
       msg: '删除成功'
@@ -239,7 +248,8 @@ router.put('/_token/update', async (request, result) => {
   const last_edit_time = new Date().getTime()
 
   // 验证成功后获得参数
-  const { id, title, categoryId, content, description } = value;
+  let { id, title, categoryId, content, description } = value;
+  if (!categoryId) categoryId = -1
   console.log("value", value)
   // 参数顺序固定为 type id
 
@@ -254,7 +264,7 @@ router.put('/_token/update', async (request, result) => {
 
   try {
     await db.async.run(updateyBlogSql, params)
-    await syncUpdateTagBlogSumTable()
+    await updateTables()
     result.send({
       code: 200,
       msg: '更新成功'
@@ -284,7 +294,8 @@ router.post('/_token/add', async (request, result) => {
     });
   }
 
-  const { title, categoryId, tags, content } = value
+  let { title, categoryId, tags, content } = value
+  if (!categoryId ) categoryId = -1
   const id = genid.NextId()
   const create_time = new Date().getTime()
 
@@ -293,7 +304,7 @@ router.post('/_token/add', async (request, result) => {
 
   try {
     await db.async.run(insertBlogSql, params)
-    await syncUpdateTagBlogSumTable()
+    await updateTables()
     result.send({
       code: 200,
       msg: '添加成功'
@@ -316,10 +327,9 @@ router.post('/_token/add', async (request, result) => {
 router.get('/get_tags', async (requset, result) => {
   // const getAllTagsSql = `SELECT DISTINCT "tags" FROM "blog" WHERE "tags" IS NOT NULL;`
   // const getAllTagsSql = `SELECT DISTINCT "value" FROM "blog" CROSS JOIN json_each("tags") WHERE json_valid("tags");`
-  const getAllTagsSql = `SELECT "tag" AS "name", "blogs_num" AS "count" FROM "tag_blog_sum";`
+  const getAllTagsSql = `SELECT "tag" AS "name", "blogs_num" AS "count" FROM "tag_blog_sum" ORDER BY name;`
   try {
     const allTagCount = await db.async.all(getAllTagsSql, [])
-    await syncUpdateTagBlogSumTable()
     // const uniqueTagsArray = allTag.map((item) => item.value);
 
     result.send({
@@ -339,44 +349,6 @@ router.get('/get_tags', async (requset, result) => {
   }
 })
 
-
-// 更新tag表（对应tag的 博客数量、博客详情列表
-function syncUpdateTagBlogSumTable() {
-  const emptyTableSql = `
-DELETE FROM tag_blog_sum;`
-  const updateNewInfoSql = `
-INSERT INTO tag_blog_sum (tag, blogs_num, blog_id_title_arr,blog_all_info_arr)
-SELECT  tag.value,
-        COUNT(*) as blogs_num,
-        json_group_array(json_object(
-          'id', blog.id, 
-          'title', blog.title
-          )) as blog_id_title_arr,
-        json_group_array(json_object(
-         'id', blog.id, 
-         'title', blog.title,
-         'description', blog.description,
-         'category_id', blog.category_id,
-         'tags', blog.tags,
-         'create_time', blog.create_time,
-         'last_edit_time', blog.last_edit_time
-         )) as blog_all_info_arr
-FROM blog, 
-    json_each(blog.tags) tag
-WHERE json_valid(blog.tags)
-GROUP BY tag.value
-ORDER BY blogs_num DESC;`
-
-  return new Promise(async (resolve, reject) => {
-    try {
-      await db.async.run(emptyTableSql, []);
-      await db.async.run(updateNewInfoSql, []);
-      resolve('done UpdateTagBlogSumTable');
-    } catch (err) {
-      reject(err);
-    }
-  });
-}
 
 
 
