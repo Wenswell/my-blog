@@ -9,20 +9,15 @@
         <!--———— 1.1 文章列表 分页器 ——————-->
         <Pagination :pageInfo="pageInfo" @toPage="toPage" />
         <!--———— 1.2 文章列表 摘要 ——————-->
-        <ListPage :tabValue="tabValue" @updateArticle="getUpdateArticleId" @changeTab="changeTab" :blogList="blogList"
-          @loadBlog="loadBlog" />
+        <ArticleList :tabValue="tabValue" @updateArticle="getUpdateArticleId" @changeTab="changeTab" :blogList="blogList"
+          @loadBlog="loadBlog" editModel />
         <!--———— 1.3 文章列表 分页器 ——————-->
         <Pagination :pageInfo="pageInfo" @toPage="toPage" />
       </n-tab-pane>
 
-      <!--———— 2. 添加文章 ——————-->
-      <n-tab-pane name="add" tab="添加文章">
-        <AddPage @changeTab="changeTab" @loadBlog="loadBlog" />
-      </n-tab-pane>
-
-      <!--———— 3. 修改文章 ——————-->
-      <n-tab-pane name="update" tab="修改文章">
-        <EditPage :updateArticle="updateArticle" @changeTab="changeTab" @loadBlog="loadBlog" />
+      <!-- 2. 添加/修改文章 -->
+      <n-tab-pane name="md-add" tab="添加文章-MD">
+        <MdPage :updateArticle="updateArticle" @changeTab="changeTab" @loadBlog="loadBlog" />
 
       </n-tab-pane>
     </n-tabs>
@@ -35,12 +30,11 @@ const message = inject('message')
 
 import { computed, onMounted, reactive, ref } from "vue";
 import Pagination from "@/components/Pagination.vue";
-import ListPage from '@/components/ArticleList.vue'
-import AddPage from './components/article-add.vue'
-import EditPage from './components/article-edit.vue'
+import ArticleList from '@/components/ArticleList.vue'
+import MdPage from './components/article-md.vue'
 
 // <!--———— 0. 顶部标签 ——————-->
-const tabValue = ref('list')
+const tabValue = ref('md-add')
 const changeTab = (type) => {
   tabValue.value = type
 }
@@ -67,6 +61,7 @@ const pageInfo = reactive({
   count: 0,
   pageCount: 0,
   categoryId: 0,
+  tags: "",
   keyword: '',
 })
 // 分页跳转
@@ -83,14 +78,17 @@ let updateArticle = reactive({
   categoryId: undefined,
   title: '',
   content: '',
+  tags: "",
+  description: '',
 })
+
 // 获取要更新的文章信息并去更新页面
 const getUpdateArticleId = async (id) => {
   const result = await axios.get(`/blog/detail?id=${id}`)
   console.log("result", result.data.result[0])
   console.log("result.data.result[0]", result.data.result[0])
-  updateArticle = result.data.result[0]
-  changeTab('update')
+  Object.assign(updateArticle, result.data.result[0])
+  changeTab('md-add')
 }
 
 onMounted(() => {

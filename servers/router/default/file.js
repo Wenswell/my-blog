@@ -48,7 +48,7 @@ router.post('/rich_editor_upload', async (requset, result) => {
     )
 
     // 收集文件名用于返回
-    fileNameList.push(`/upload/${newFilename}`)
+    fileNameList.push(`upload/${newFilename}`)
   })
 
   result.send({
@@ -101,7 +101,7 @@ router.post('/_token/upload', (request, result) => {
     // 收集文件名用于返回
     // 拼接地址后即可访问
     // eg. http://localhost:3123/upload/1686923848106.jpg
-    fileNameList.push(`/upload/${newFilename}`)
+    fileNameList.push(`upload/${newFilename}`)
   })
 
   result.send({

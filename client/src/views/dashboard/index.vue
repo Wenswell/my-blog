@@ -25,6 +25,7 @@ const router = useRouter()
 // const adminStore = AdminStore()
 
 const menus = [
+  { name: '首页', href: '/' },
   { name: '文章管理', href: '/dash/article' },
   { name: '分类管理', href: '/dash/category' },
   { name: '退出', href: '/login' },
@@ -48,7 +49,7 @@ const toPage = (href) => {
     width: 10rem;
     position: fixed;
     height: 100%;
-    border-right: 1px solid $light-grey;
+    border-right: 1px solid $clr-back-grey;
 
     &-item {
       height: 5rem;
