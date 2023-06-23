@@ -8,13 +8,12 @@
       <template #trigger="{ activate, disabled }">
         <n-button size="small" type="primary" dashed :disabled="disabled" @click="activate()">
           <template #icon>
-            ➕
+            +
           </template>
           标签
         </n-button>
       </template>
     </n-dynamic-tags>
-    tagSet{{ tagSet }}
   </div>
 </template>
 
@@ -24,10 +23,10 @@ import { ref, watch, nextTick, reactive, computed } from "vue";
 // 选中的标签列表
 const tagsRef = ref([]);
 
-
 // 父组件接收的标签列表
-const {valueModel} = defineProps({
-  valueModel: {default: ''}
+const { valueModel, updateOriginTag } = defineProps({
+  valueModel: { default: '' },
+  updateOriginTag: { default: '' },
 })
 // 同步 选中的标签列表 至 父组件
 const emit = defineEmits(['update:value-model'])
@@ -35,21 +34,18 @@ watchEffect(() => {
   emit('update:value-model', JSON.stringify(tagsRef.value));
 });
 
-// 标签列表
-const getTags = ref([])
+// 标签下拉列表
+let getTags = ref([])
 
 // auto-complete 输入框自动显示后 1. 获取焦点; 2. 默认显示全部标签
 const autoCompleteInstRef = ref(null);
 watch(autoCompleteInstRef, (value) => {
   if (value)
     nextTick(() => {
-
-      const filtergetTags = getTags.value.filter(item =>{
+      const filtergetTags = getTags.value.filter(item => {
         return !tagSet.value.has(item)
       })
-
       autoOptions = filtergetTags
-
       value.focus()
     });
 });
@@ -70,14 +66,12 @@ watchEffect(() => {
   const filteredArrOrgin = getTags.value.filter(item => {
     return item.includes(inputValueRef.value)
   })
-
-  const filteredArr=filteredArrOrgin.filter(item=>{
+  const filteredArr = filteredArrOrgin.filter(item => {
     return !tagSet.value.has(item)
   })
 
-
   // 没有匹配标签的时候将输入值作为标签
-  if (!filteredArr.length&&!tagSet.value.has(inputValueRef.value)) filteredArr.unshift(inputValueRef.value)
+  if (!filteredArr.length && !tagSet.value.has(inputValueRef.value)) filteredArr.unshift(inputValueRef.value)
   // 更新下拉框选项
   autoOptions = filteredArr
 });
@@ -90,8 +84,13 @@ const loadTags = async () => {
   getTags.value = result.data.result
 }
 onMounted(() => {
+  // 加载所有标签
   loadTags()
-  console.log("valueModel", valueModel)
+  // 如果有传值说明是修改文章 需要展示原有标签
+  tagsRef.value = Boolean(updateOriginTag.length) ?
+    JSON.parse(updateOriginTag)
+    : []
+
 })
 </script>
 

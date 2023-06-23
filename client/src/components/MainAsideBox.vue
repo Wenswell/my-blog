@@ -1,31 +1,49 @@
 <template>
-    <main class="center-box">
+  <main class="main-box">
+    <slot></slot>
+    <div class="grid-box" v-if="!defalut">
       <div class="center-main">
         <slot name="main"></slot>
       </div>
       <aside class="center-aside">
         <slot name="aside"></slot>
       </aside>
-    </main>
+    </div>
+  </main>
 </template>
 
+<script setup>
+const { defalut } = defineProps({
+  defalut: {
+    type: Boolean,
+    default: false
+  }
+})
+
+</script>
+
 <style lang="scss" scoped>
-.center-box {
+.main-box {
+  padding-top: $header-height + $gap;
+  max-width: $main-width;
   margin-inline: auto;
-  width: $main-width;
-  display: flex;
+  min-height: calc(100vh - #{$footer-height});
+  // min-height: calc(100vh - #{$gap} - #{$header-height} - #{$footer-height});
+}
+
+.grid-box {
+  display: grid;
+  grid-template-columns: 1fr 20rem;
   gap: $gap;
-  min-height: calc(100vh - #{$gap} - #{$header-height} - #{$footer-height});
 
   .center-aside {
-    flex: 0 0 20em;
     display: flex;
     flex-direction: column;
 
   }
 
   .center-main {
-    flex: 1;
+    width: 100%;
   }
 
 }
