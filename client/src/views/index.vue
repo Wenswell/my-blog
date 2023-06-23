@@ -3,7 +3,7 @@
     <div ref="nav">
       <HomeNav v-model:is-nav-hidden="isNavHidden" class="top-bar" />
     </div>
-    <div class="home-place-holder"></div>
+    <!-- <div class="home-place-holder"></div> -->
 
     <router-view></router-view>
 
@@ -15,8 +15,7 @@
 </template>
 
 <script setup>
-import HomeNav from './components/home-nav.vue'
-
+import HomeNav from '@/components/home-nav.vue'
 const nav = ref(null);
 const lastScrollTop = ref(0);
 const isNavHidden = ref(false);
@@ -42,7 +41,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 .home-page {
   margin: 0 auto;
-  background-color: $light-grey;
+  background-color: $clr-back-grey;
   min-height: 100svh;
 }
 
@@ -54,6 +53,6 @@ onMounted(() => {
 
 .footer {
   height: $footer-height;
-  background-color: $light;
+  background-color: $clr-back;
 }
 </style>
