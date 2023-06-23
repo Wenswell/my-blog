@@ -13,7 +13,7 @@
           <n-icon class="icon" size="1rem" :component="FolderOpenOutline" />
           <span @click.stop="message.info(blog.type)" class="item-text" v-text="blog.type" />
         </span>
-        <span style="opacity: 0.5;" v-if="!blog.type">法外之徒</span>
+        <!-- <span style="opacity: 0.5;" v-if="!blog.type">法外之徒</span> -->
         <!--———— 1.2.3 文章 tags ——————-->
         <span class="blog-up-tags" v-if="blog.tags.length">
           <n-icon class="icon" size="1rem" :component="PricetagsOutline" />

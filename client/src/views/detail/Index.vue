@@ -2,38 +2,57 @@
   <MainAsideBox>
     <template v-slot:main>
       <!-- 这里是主要内容 -->
-      <div class="blog-box">
+      <!-- <div class="blog-box">
         <h1 class="blog-title">
           {{ blogDetail.title }}
         </h1>
         <div class="blog-content" v-html="blogDetail.content"></div>
-      </div>
+      </div> -->
+      <MdPreview class="main" :editorId="id" :modelValue="blogDetail.content" />
     </template>
     <template v-slot:aside>
-      <!-- 这里是侧边栏内容 -->
+      <div class="aside">
+
+        <div class="aside-title">
+          <n-icon :component="BookmarksOutline" />
+          目录
+        </div>
+        <MdCatalog :scrollElementOffsetTop="headerHeightPx" class="aside-content" :editorId="id"
+          :scrollElement="scrollElement" />
+      </div>
+
     </template>
   </MainAsideBox>
 </template>
+
 
 <script setup>
 const axios = inject('axios')
 const message = inject('message')
 import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute,useRouter } from 'vue-router';
+import { BookmarksOutline } from "@vicons/ionicons5";
 import MainAsideBox from "@/components/MainAsideBox.vue";
 const route = useRoute()
+const router = useRouter()
 
+const headerHeightPx = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) * parseInt(getComputedStyle(document.documentElement).fontSize)
 
+import { MdPreview, MdCatalog } from 'md-editor-v3';
+import 'md-editor-v3/lib/preview.css';
+const id = 'preview-only';
+const scrollElement = document.documentElement;
 
 // 加载单篇文章的详细信息
 let blogDetail = ref({})
 const loadBlogById = async () => {
   const result = await axios.get(`/blog/detail?id=${route.params.id}`)
-  if (result.data.code === 200) {
+  if (result.data.code === 200 && result.data.result.length) {
     blogDetail.value = result.data.result[0]
-    message.success(result.data.msg)
+    // message.success("文章加载成功")
   } else {
-    message.error(result.data.msg)
+    message.error("加载失败，请刷新")
+    router.back()
   }
 }
 onMounted(() => {
@@ -43,9 +62,25 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.blog-box {
-  background-color: $clr-back;
-  padding: $gap;
-  margin-block: $gap;
+.aside {
+  position: fixed;
+  color: $clr-text-pri;
+
+  &-title {
+    user-select: none;
+    -webkit-user-select: none;
+    padding: $s-gap $gap;
+    background-color: $clr-back;
+    display: flex;
+    gap: $s-gap;
+    align-items: center;
+    margin-bottom: $gap;
+  }
+
+  &-content {
+    width: 100%;
+    padding: $s-gap $gap;
+    background-color: $clr-back;
+  }
 }
 </style>

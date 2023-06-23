@@ -78,13 +78,13 @@ const {isNavHidden} = defineProps({
         left: 0px;
         width: 100%;
         height: 0%;
-        background-color: $primary-transp;
+        background-color: $primary-transp-0;
         transition: height 0.3s cubic-bezier(0, 0.5, 0.5, 1);;
         z-index: -1;
       }
 
       &:hover {
-        background-color: $primary-transp;
+        background-color: $primary-transp-0;
         color: $primary-color;
       }
 

@@ -156,7 +156,6 @@ app.use(multer({
 
 
 
-<<<<<<< HEAD
 
 
 
@@ -187,5 +186,46 @@ const { valueModel } = defineProps({
 const emit = defineEmits(['update:value-model'])
 emit('update:value-model', keyword.value);
 ```
-=======
->>>>>>> origin/develop
+
+
+## SQL语法支持问题
+
+```sql
+UPDATE
+SET
+
+-- 这样创建虚拟表在Node.js里不成功，虽然在HeidiSQL里**可以正常使用**
+-- 报错 Error: SQLITE_ERROR: near "FROM": syntax error
+FROM (
+SELECT
+FROM
+JOIN
+GROUP BY
+) AS
+
+
+WHERE
+```
+
+```sql
+-- 按常规方式可以运行
+-- CREATE VIRTUAL TABLE
+-- INSERT INTO
+-- UPDATE JOIN
+-- UPDATE
+-- DROP TABLE
+-- 以上代码也不能得到理想的结果
+
+-- 单列插入没有问题
+UPDATE category
+SET blogs_num = (
+    SELECT COUNT(blog.id)
+    FROM blog
+    WHERE blog.category_id = category.id
+  ),
+  blog_data = (
+    SELECT '[' || group_concat(json_object('id', blog.id, 'title', blog.title)) || ']'
+    FROM blog
+    WHERE blog.category_id = category.id
+  );`
+```

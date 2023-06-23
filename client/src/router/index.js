@@ -9,19 +9,13 @@ const routes = [
     redirect: '/home',
     component: () => import('@/views/Index.vue'),
     children: [
-      {
-        path: 'home',
-        component: () => import('@/views/home/index.vue'),
-      },
-      {
-        path: 'category',
-        component: () => import('@/views/category/index.vue'),
-      },
+      { path: 'home', component: () => import('@/views/home/index.vue'), },
+      { path: 'category', component: () => import('@/views/category/index.vue'), },
+      { path: 'tags', component: () => import('@/views/tags/index.vue'), },
+      // { path: 'archive', component: () => import('@/views/archive/index.vue'), },
+      { path: 'about', component: () => import('@/views/about/index.vue'), },
+      { path: 'detail/:id', component: () => import('@/views/detail/Index.vue') },
       // { path: 'detail', component: () => import('@/views/detail/Index.vue') },
-      {
-        path: 'detail/:id',
-        component: () => import('@/views/detail/Index.vue')
-      },
     ]
   },
   {

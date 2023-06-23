@@ -2,14 +2,9 @@
   <MainAsideBox>
     <template v-slot:main>
       <!-- 这里是主要内容 -->
-<<<<<<< HEAD:client/src/views/home/index.vue
-      <TESTShowArticleList :tagSet="tagSet" :keywordRef="keywordRef" :isSearchAll="isSearchAll" />
-
-=======
       <ArticleList :blogList="blogList" :showModel="true" />
       <div class="no-blog">{{ noBlog }}</div>
       <Pagination v-show="pageInfo.pageCount > 1 && blogList.length" :pageInfo="pageInfo" @toPage="toPage" />
->>>>>>> origin/develop:client/src/views/index/Home.vue
     </template>
     <template v-slot:aside>
       <!-- 这里是侧边栏内容 -->
@@ -39,11 +34,6 @@ import TESTShowArticleList from '@/components/ShowArticleList.vue'
 import { computed, onMounted, reactive, ref } from "vue";
 import { PricetagsOutline } from "@vicons/ionicons5";
 
-<<<<<<< HEAD:client/src/views/home/index.vue
-let isSearchAll = ref(false)
-const searchAll = () => {
-  isSearchAll.value = true
-=======
 
 // 文章预览列表
 let blogList = ref([])
@@ -71,7 +61,6 @@ const loadBlog = async (isSearch) => {
   } else {
     message.error(result.data.msg)
   }
->>>>>>> origin/develop:client/src/views/index/Home.vue
 }
 
 // 绑定至子组件用于搜索

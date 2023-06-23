@@ -172,6 +172,8 @@ const createPaginator = computed(() => {
     }
 
     &.active {
+      cursor:auto;
+      pointer-events: none;
       background-color: $primary-color;
       color: $white;
     }
@@ -185,7 +187,7 @@ const createPaginator = computed(() => {
     // 禁用样式
     &.disable {
       opacity: 0.5;
-      // cursor: not-allowed;
+      cursor:auto;
       pointer-events: none;
       border: none;
       background-color: $clr-back-grey;

@@ -1,48 +1,31 @@
 <template>
   <MainAsideBox>
     <template v-slot:main>
-      <!-- 这里是主要内容 -->
-      <ShowArticleList :tagSet="tagSet" :keywordRef="keywordRef" ref="articleList" />
+      <!-- <ShowArticleList :tagSet="tagSet" :keywordRef="keywordRef" ref="articleList" /> -->
+      <ShowArticleList :tagSet="tagSet" keywordRef="" :categoryId="0" ref="articleList" />
 
     </template>
     <template v-slot:aside>
-      <!-- 这里是侧边栏内容 -->
-      <div class="search-box">
-        <SearchInput v-model:valueModel="keywordRef" ref="searchBar" />
-        <div class="tags-box">
-          <div @click="searchAll" class="tag-title center--text">
+      <div class="tags-box">
+          <div @click="tagsRef=[]" class="tag-title center--text">
             <n-icon color="gray" size="1rem" :component="PricetagsOutline" />
             标签
           </div>
-          <span @click="onAddTag(tag.name)" :class="{ active: tagSet.has(tag.name) }" class="tag center--text"
+          <span :style="{zoom:Math.log10(tag.count+1)+0.6}" @click="onAddTag(tag.name)" :class="{ active: tagSet.has(tag.name) }" class="tag center--text"
             v-for="tag in getTags">
             {{ tag.name }}
+          <span class="tag-count">{{ tag.count }}</span>
           </span>
         </div>
-      </div>
     </template>
   </MainAsideBox>
 </template>
 
 <script setup>
-import SearchInput from './components/search-input.vue'
 import MainAsideBox from "@/components/MainAsideBox.vue";
 import ShowArticleList from '@/components/ShowArticleList.vue'
 
-import { computed, onMounted, reactive, ref } from "vue";
 import { PricetagsOutline } from "@vicons/ionicons5";
-
-const articleList = ref(null)
-const searchBar = ref(null)
-const searchAll = () => {
-  // 清空本地
-  tagsRef.value = []
-  keywordRef.value = ''
-
-  // 调用子组件的清空+搜索
-  searchBar.value.clearKeyword()
-  articleList.value.searchAll()
-}
 
 // 绑定至子组件用于搜索
 const keywordRef = ref(null)
@@ -70,17 +53,8 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.no-blog {
-  @extend .center--text;
-  cursor: auto;
-  font-size: $fs-big;
-  color: $clr-text-pri;
-  font-weight: bold;
-  -webkit-text-stroke: 1px $clr-back;
-}
-
 .tags-box {
-  margin-block: $gap;
+  margin-bottom: $gap;
   display: block;
 
   .tag-title {
@@ -100,7 +74,7 @@ onMounted(() => {
     &::after {
       transition-property: all, color;
       transition-duration: 50ms, 150ms;
-      content: '点击移除全部标签 & 清空搜索栏';
+      content: '点击移除全部标签';
       color: $clr-back-grey;
       position: absolute;
       left: 25%;
@@ -110,16 +84,30 @@ onMounted(() => {
 
     &:hover::after {
       color: $clr-text-pri;
-      content: '移除全部标签 & 清空搜索栏 (查看全部)';
+      content: '移除全部标签 (查看全部)';
     }
   }
 
   .tag {
     padding-inline: $s-gap;
-    margin-top: $gap;
-    margin-right: 1rem;
+    margin-top: $s-gap;
+    margin-right: $s-gap;
     display: inline-block;
     @extend .active-effect;
+    position: relative;
+    &::before{
+      content:'#'
+    }
+
+    &-count{
+      font-weight: bold;
+      position: absolute;
+      right: -2%;
+      top: 30%;
+      color: $primary-transp-2;
+      mix-blend-mode: multiply;
+
+    }
   }
 }
 </style>
