@@ -1,10 +1,5 @@
 <template>
   <!-- 这里是主要内容 -->
-  tagSet: {{ tagSet }}
-  <br>
-  keywordRef: {{ keywordRef }}
-  <br>
-  isSearchAll: {{ isSearchAll }}
   <ArticleList :blogList="blogList" />
   <div class="no-blog">{{ noBlog }}</div>
   <Pagination v-show="pageInfo.pageCount > 1 && blogList.length" :pageInfo="pageInfo" @toPage="toPage" />
@@ -14,14 +9,14 @@
 const axios = inject('axios')
 const message = inject('message')
 import Pagination from "@/components/Pagination.vue";
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref, watchEffect } from "vue";
 // import SearchInput from './components/search-input.vue'
 // import MainAsideBox from "@/components/MainAsideBox.vue";
 // import { PricetagsOutline } from "@vicons/ionicons5";
 
-const props = defineProps({
+let props = defineProps({
   tagSet: { type: Object, },
-  keywordRef: { type: Object, },
+  keywordRef: { type: String, },
   categoryId: { type: Number, },
   isSearchAll: { type: Boolean, },
 })
@@ -40,12 +35,15 @@ const loadBlog = async () => {
     pageInfo.pageCount = pageInfo.pageSize ? Math.ceil(pageInfo.count / pageInfo.pageSize) : 0
 
 
-    if ((pageInfo.keyword || pageInfo.tags.length) && result.data.result.count) {
+    if ((pageInfo.categoryId||pageInfo.keyword || pageInfo.tags.length) && result.data.result.count) {
       // 搜索完成
       message.success(`共 ${pageInfo.count} 条结果`)
     } else if (pageInfo.keyword || pageInfo.tags.length) {
       // 没有结果
-      noBlog.value = '没有结果'
+      noBlog.value = '没有结果，换换条件'
+    } else if (pageInfo.categoryId) {
+      // 没有结果
+      noBlog.value = `这是一个空的分类`
     }
 
   } else {
@@ -53,7 +51,7 @@ const loadBlog = async () => {
   }
 }
 // 列表分页信息
-const pageInfo = reactive({
+let pageInfo = reactive({
   page: 1,
   pageSize: 10,
   count: 0,
@@ -65,9 +63,21 @@ const pageInfo = reactive({
 // 分页跳转
 const toPage = async (page) => {
   if (page == pageInfo.page || page > pageInfo.pageCount || page <= 0) return
+  window.scrollTo({
+    top: 0,
+    behavior: 'auto'
+  })
   pageInfo.page = page
   loadBlog()
 }
+watchEffect(() => {
+  pageInfo.tags = [...props.tagSet]
+  pageInfo.keyword = props.keywordRef || ''
+  pageInfo.categoryId = props.categoryId || 0
+
+  loadBlog()
+});
+
 
 // 清空条件，搜索全部
 const searchAll = () => {
@@ -77,6 +87,9 @@ const searchAll = () => {
   loadBlog()
 }
 
+defineExpose({
+  searchAll
+});
 // // 根据关键词搜索文章
 // const searchBlog = (keyword) => {
 //   pageInfo.keyword = keyword
@@ -136,7 +149,7 @@ onMounted(() => {
 //     transition: transform 200ms;
 
 //     &:active {
-//       background-color: $primary-transp;
+//       background-color: $primary-transp-0;
 //       transform: scale(1.05);
 //     }
 
@@ -168,11 +181,11 @@ onMounted(() => {
 
 //     &:hover {
 //       color: $primary-color;
-//       border-color: $primary-transp;
+//       border-color: $primary-transp-0;
 //     }
 
 //     &:active {
-//       background-color: $primary-transp;
+//       background-color: $primary-transp-0;
 //       transform: scale(0.9);
 //     }
 

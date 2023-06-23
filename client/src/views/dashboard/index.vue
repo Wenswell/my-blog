@@ -60,7 +60,7 @@ const toPage = (href) => {
 
       &.active {
         color: $primary-color;
-        background-color: $primary-transp;
+        background-color: $primary-transp-0;
         border-left-color: $primary-color;
       }
 

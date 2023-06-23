@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const { db, genid } = require('@db')
 const Joi = require('joi');
+const { updateTables } = require('@/router/default/updateStatistics')
 
 const schemaId = Joi.object({
   id: Joi.string().required(),
@@ -30,7 +31,7 @@ const schemaIdType = Joi.object({
 // GET 获取分类
 // 必须参数: id
 router.get('/get', async (request, result) => {
-  const getCategorySql = 'SELECT * FROM `category`'
+  const getCategorySql = 'SELECT id, type, blogs_num FROM `category` ORDER BY type'
   try {
     const rows = await db.async.all(getCategorySql, [])
     // console.log("rows", rows)
@@ -69,6 +70,7 @@ router.delete('/_token/delete', async (request, result) => {
   const deleteCategorySql = 'DELETE FROM `category` WHERE `id` = ?'
   try {
     await db.async.run(deleteCategorySql, [id])
+    await updateTables()
     result.send({
       code: 200,
       msg: '删除成功'

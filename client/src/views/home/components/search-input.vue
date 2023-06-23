@@ -17,6 +17,14 @@ const { valueModel } = defineProps({
   valueModel: { type: String }
 })
 
+
+
+const clearKeyword = () => {
+  keyword.value = null
+}
+defineExpose({
+  clearKeyword
+})
 const emit = defineEmits(['update:value-model', 'search-keyword'])
 let keyword = ref(null)
 // watchEffect(() => {
@@ -58,4 +66,5 @@ const toSearch = () => {
       color: $primary-color;
     }
   }
-}</style>
+}
+</style>
