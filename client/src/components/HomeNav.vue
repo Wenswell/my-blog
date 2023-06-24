@@ -1,16 +1,16 @@
 <template>
   <header class="header" :class="{ 'hidden': isNavHidden }">
-    <h1 class="header-title">
+    <div class="header-title">
       my-blog {{ isNavHidden }}
-    </h1>
+    </div>
     <input type="checkbox" id="nav-toggle" class="nav-toggle">
     <nav class="header-nav">
       <ul>
-        <li :class="{ active: item.href == route.path }" class="nav-item center--text" @click="router.push(item.href)"
+        <button :class="{ active: item.name == route.name }" class="nav-item center--text" @click="toPage(item)"
           v-for="item in topBarItem">
           <n-icon class="nav-item-icon" size="1rem" :component="item.icon" />
           {{ item.title }}
-        </li>
+        </button>
       </ul>
     </nav>
     <label for="nav-toggle" class="nav-toggle-label">
@@ -25,13 +25,17 @@ import { useRoute, useRouter } from 'vue-router';
 const route = useRoute()
 const router = useRouter()
 const topBarItem = [
-  { title: '主页', icon: HomeOutline, href: '/home' },
-  { title: '分类', icon: FilterCircleOutline, href: '/category' },
-  { title: '标签', icon: PricetagsOutline, href: '/tags' },
-  // { title: '归档', icon: ArchiveOutline, href: '/archive' },
-  { title: '关于', icon: WalkOutline, href: '/about' },
-  { title: '后台', icon: SettingsOutline, href: '/login' },
+  { title: '主页', icon: HomeOutline, href: '/home', name: 'home', },
+  { title: '分类', icon: FilterCircleOutline, href: '/category', name: 'category', },
+  { title: '标签', icon: PricetagsOutline, href: '/tags', name: 'tags', },
+  // { title: '归档', icon: ArchiveOutline, href: '/archive',name:'archive', },
+  { title: '关于', icon: WalkOutline, href: '/about', name: 'about', },
+  { title: '后台', icon: SettingsOutline, href: '/login', name: 'login', },
 ]
+
+const toPage = (item) => {
+  item.name == route.name ? '' : router.push(item.href)
+}
 
 const { isNavHidden } = defineProps({
   isNavHidden: {
@@ -47,14 +51,22 @@ const { isNavHidden } = defineProps({
   &.hidden {
     // transform: translateY(-100%);
   }
+
   background-color: $clr-back;
   position: fixed;
   z-index: 10;
   width: 100%;
   text-align: center;
   transition: all 300ms;
-  // height: $header-height;
+  height: $header-height;
   // padding-inline: $gap;
+}
+
+.header-title {
+  font-size: $fs-large;
+  height: 100%;
+  line-height: $header-height;
+
 }
 
 .header-nav {
@@ -65,7 +77,7 @@ const { isNavHidden } = defineProps({
   left: 0;
   transform: scale(1, 0);
   transform-origin: top;
-  transition: transform 400ms ease-in-out;
+  transition: transform 200ms ease-in-out;
 
   ul {
     margin: 0;
@@ -73,16 +85,20 @@ const { isNavHidden } = defineProps({
     list-style: none;
   }
 
-  li.nav-item {
-    @extend .active-effect;
+  .nav-item {
+    // @extend .active-effect;
+    width: 100%;
     justify-content: flex-start;
-    margin-left: $gap;
+    padding-left: $gap;
     padding-block: $s-gap;
     opacity: 0;
-    transition: opacity 150ms ease-in-out;
+    transition: opacity 100ms ease-in-out;
+    font-size: 1rem;
+    gap: $s-gap;
 
-    &:active {
-      background-color: $primary-transp-0;
+    &.active {
+      background-color: $primary-color;
+      color: $clr-back;
       transform: scale(1);
     }
   }
@@ -95,9 +111,9 @@ const { isNavHidden } = defineProps({
     display: block;
     transform: scale(1, 1);
 
-    li.nav-item {
+    .nav-item {
       opacity: 1;
-      transition: opacity 250ms ease-in-out 150ms;
+      transition: opacity 150ms ease-in-out 50ms;
     }
 
   }
@@ -112,14 +128,14 @@ const { isNavHidden } = defineProps({
   @extend .center--text;
 }
 
-@media screen and (min-width: 800px) {
+@media screen and (min-width: 60rem) {
   .nav-toggle-label {
     display: none;
   }
 
   .header {
     display: grid;
-    grid-template-columns: 1fr auto minmax(600px, 3fr) 1fr;
+    grid-template-columns: 1fr auto minmax(30rem, 5fr) 1fr;
   }
 
   .header-title {
@@ -132,11 +148,11 @@ const { isNavHidden } = defineProps({
     display: flex;
     justify-content: flex-end;
 
-    li.nav-item {
+    .nav-item {
       opacity: 1;
       padding-inline: 2vw;
       position: relative;
-      
+
       &::before {
         content: '';
         position: absolute;
@@ -158,18 +174,19 @@ const { isNavHidden } = defineProps({
         height: 100%;
       }
 
-      &.active{
+      &.active {
         cursor: auto;
 
-        &:hover{
+        &:hover {
           background-color: $primary-color;
           color: $clr-back;
-          
+
         }
       }
 
     }
-    ul{
+
+    ul {
       display: flex;
     }
   }

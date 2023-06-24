@@ -3,11 +3,10 @@
     <template v-slot:main>
       <!-- <ShowArticleList :tagSet="tagSet" :keywordRef="keywordRef" ref="articleList" /> -->
       <ShowArticleList :tagSet="[]" keywordRef="" :categoryId="categoryIdref" ref="articleList" />
-
     </template>
-    <template v-slot:aside>
+    <template v-slot:top>
       <div class="category">
-        <div :class="{ active: categoryIdref == 0 }"  @click="changeCateId(0)" class="category-title">全部分类</div>
+        <div :class="{ active: categoryIdref == 0 }" @click="changeCateId(0)" class="category-title">全部分类</div>
         <div :class="{ active: cate.id == categoryIdref }" class="category-item center--text"
           v-for="cate in categoryOptions" @click="changeCateId(cate.id)">
           <n-icon style="opacity: 0.5;" class="icon" size="1rem" :component="FolderOpenOutline" />
@@ -24,12 +23,22 @@ import MainAsideBox from "@/components/MainAsideBox.vue";
 import ShowArticleList from '@/components/ShowArticleList.vue'
 
 import { FolderOpenOutline } from "@vicons/ionicons5";
+import { useRoute, useRouter } from 'vue-router';
 
-let categoryIdref = ref(0)
+const route = useRoute()
+const router = useRouter()
+
+let categoryIdref = ref(+route.params.type)
+
+
 const changeCateId = (id) => {
   if (categoryIdref.value == id) {
     categoryIdref.value = 0
-  } else categoryIdref.value = id
+    router.push('/category/' + 0)
+  } else {
+    categoryIdref.value = id
+    router.push('/category/' + id)
+  }
 }
 
 // 加载分类
@@ -37,7 +46,7 @@ const axios = inject('axios')
 const categoryOptions = ref([])
 const loadCategory = async () => {
   const result = await axios.get('/category/get')
-  console.log("result", result)
+  // console.log("result", result)
   categoryOptions.value = result.data.result
   // categoryOptions.value.push({ "id": -1, "type": "还没分类" })
   // categoryOptions.value = result.data.result.map(item => {
@@ -72,6 +81,7 @@ onMounted(() => {
 
   &-item {
     flex-basis: 30%;
+    flex-grow: 1;
     padding-block: $gap;
     gap: $mico-gap;
     @extend .active-effect-enlarge;

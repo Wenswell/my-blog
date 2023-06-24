@@ -2,6 +2,9 @@
 
 // 用于按钮样式
 .center--text {
+  color: $clr-text-pri;
+  background-color: $clr-back;
+  border: none;
   display: flex;
   align-items: center;
   text-align: center;
@@ -12,12 +15,7 @@
 }
 // button专用 把按钮当span用
 .plain {
-  background-color: $clr-back;
-  border: none;
-}
-
-// button专用 把按钮当span用
-.plain {
+  color: $clr-text-pri;
   background-color: $clr-back;
   border: none;
 }

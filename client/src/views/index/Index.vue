@@ -1,8 +1,6 @@
 <template>
   <div class="home-page">
-    <div ref="nav">
-      <HomeNav v-model:is-nav-hidden="isNavHidden" class="top-bar" />
-    </div>
+    <HomeNav v-model:is-nav-hidden="isNavHidden" class="top-bar" />
     <div class="home-place-holder"></div>
 
     <router-view></router-view>
@@ -17,26 +15,11 @@
 <script setup>
 import HomeNav from './components/home-nav.vue'
 
-const nav = ref(null);
-const lastScrollTop = ref(0);
-const isNavHidden = ref(false);
-
-onMounted(() => {
-  window.addEventListener('scroll', () => {
-    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    if (scrollTop > lastScrollTop.value && scrollTop > nav.value.offsetHeight) {
-      isNavHidden.value = true;
-    } else {
-      isNavHidden.value = false;
-    }
-    lastScrollTop.value = scrollTop <= 0 ? 0 : scrollTop;
-  }, false);
-})
-
-
-
-
-
+// if (page == pageInfo.page || page > pageInfo.pageCount || page <= 0) return
+//   window.scrollTo({
+//     top: 0,
+//     behavior: 'auto'
+//   })
 </script>
 
 <style lang="scss" scoped>

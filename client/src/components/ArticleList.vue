@@ -11,13 +11,14 @@
         <!-- <span class="blog-up-category" v-text="blog.type" /> -->
         <span class="blog-up-category">
           <n-icon class="icon" size="1rem" :component="FolderOpenOutline" />
-          <span @click.stop="message.info(blog.type)" class="item-text" v-text="blog.type" />
+          <span @click.stop="toTagOrCate('category', blog.category_id)" class="item-text" v-text="blog.type" />
         </span>
         <!-- <span style="opacity: 0.5;" v-if="!blog.type">法外之徒</span> -->
         <!--———— 1.2.3 文章 tags ——————-->
         <span class="blog-up-tags" v-if="blog.tags.length">
           <n-icon class="icon" size="1rem" :component="PricetagsOutline" />
-          <span @click.stop="message.info(item)" class="tags-item item-text" v-for="item in blog.tags" v-text="item" />
+          <span @click.stop="toTagOrCate('tags', item)" class="tags-item item-text" v-for="item in blog.tags"
+            v-text="item" />
         </span>
       </div>
       <!--———— 1.2.4 文章 desc ——————-->
@@ -43,7 +44,10 @@
 <script setup>
 import { onMounted } from 'vue';
 import { FolderOpenOutline, PricetagsOutline } from "@vicons/ionicons5";
-
+import { useRoute, useRouter } from 'vue-router';
+const message = inject('message')
+const route = useRoute()
+const router = useRouter()
 
 // 格式化显示时间
 const dayjs = inject("dayjs")
@@ -75,8 +79,32 @@ onMounted(() => {
   }
 })
 
-import { useRouter } from 'vue-router';
-const router = useRouter()
+let isTagsTwice = false
+let isCategoryTwice = false
+const toTagOrCate = (page, params) => {
+
+  if (page == 'tags') {
+    if (isTagsTwice == params) {
+      router.push({ name: 'tags', query: { tags: params } })
+    } else if (isTagsTwice != params) {
+      message.info('再点一次', { duration: 850 })
+      isTagsTwice = params
+      isCategoryTwice = false
+    }
+  }
+
+  if (page == 'category') {
+    if (isCategoryTwice == params) {
+      router.push({ name: 'category', params: { type: params } })
+    } else if (isCategoryTwice != params) {
+      message.info('再点一次', { duration: 850 })
+      isCategoryTwice = params
+      isTagsTwice = false
+    }
+  }
+
+}
+
 let toDetail = (id) => {
   router.push(`/detail/${id}`)
 }
@@ -89,7 +117,6 @@ const toUpdate = (id) => {
 
 
 // 删除文章
-const message = inject('message')
 const dialog = inject('dialog')
 const onDelete = async (id, title) => {
   dialog.warning({
@@ -139,6 +166,7 @@ const onDelete = async (id, title) => {
   &-top-title {
     font-size: $fs-big;
     line-height: $fs-large;
+    word-break: break-all;
   }
 
   // 卡片 博客分类、tag
@@ -150,6 +178,10 @@ const onDelete = async (id, title) => {
     &-category {
       display: flex;
       align-items: center;
+
+      .item-text {
+        white-space: nowrap
+      }
     }
 
     // 卡片 博客tags
@@ -157,6 +189,7 @@ const onDelete = async (id, title) => {
       display: flex;
       align-items: center;
       margin-inline: $s-gap;
+      flex-wrap: wrap;
 
       .tags-item {
         margin-right: $s-gap;

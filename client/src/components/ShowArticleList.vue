@@ -24,31 +24,39 @@ let props = defineProps({
 // 文章预览列表
 let blogList = ref([])
 let noBlog = ref('')
-// 加载文章列表
-const loadBlog = async () => {
+// 最终入口：加载文章列表
+let timer = null
+const loadBlog = async (page) => {
+  if (timer) return
+  if(!page) pageInfo.page = 1
+
   noBlog.value = ''
-
-  const result = await axios.get(`/blog/search?categoryId=${pageInfo.categoryId}&tags=${pageInfo.tags}&keyword=${pageInfo.keyword}&page=${pageInfo.page}&pageSize=${pageInfo.pageSize}`)
-  if (result.data.code === 200) {
-    blogList.value = result.data.result.list
-    pageInfo.count = result.data.result.count
-    pageInfo.pageCount = pageInfo.pageSize ? Math.ceil(pageInfo.count / pageInfo.pageSize) : 0
-
-
-    if ((pageInfo.categoryId||pageInfo.keyword || pageInfo.tags.length) && result.data.result.count) {
-      // 搜索完成
-      message.success(`共 ${pageInfo.count} 条结果`)
-    } else if (pageInfo.keyword || pageInfo.tags.length) {
-      // 没有结果
-      noBlog.value = '没有结果，换换条件'
-    } else if (pageInfo.categoryId) {
-      // 没有结果
-      noBlog.value = `这是一个空的分类`
+  let result = null
+  timer = setTimeout(async () => {
+    // 这里是需要节流的代码
+    result = await axios.get(`/blog/search?categoryId=${pageInfo.categoryId}&tags=${pageInfo.tags}&keyword=${pageInfo.keyword}&page=${pageInfo.page}&pageSize=${pageInfo.pageSize}`)
+    timer = null
+    if (result.data.code === 200) {
+      blogList.value = result.data.result.list
+      pageInfo.count = result.data.result.count
+      pageInfo.pageCount = pageInfo.pageSize ? Math.ceil(pageInfo.count / pageInfo.pageSize) : 0
+  
+  
+      if ((pageInfo.categoryId || pageInfo.keyword || pageInfo.tags.length) && result.data.result.count) {
+        // 搜索完成
+        message.success(`共 ${pageInfo.count} 条结果`)
+      } else if (pageInfo.keyword || pageInfo.tags.length) {
+        // 没有结果
+        noBlog.value = '没有结果，换换条件'
+      } else if (pageInfo.categoryId) {
+        // 没有结果
+        noBlog.value = `这是一个空的分类`
+      }
+  
+    } else {
+      message.error(result.data.msg)
     }
-
-  } else {
-    message.error(result.data.msg)
-  }
+  })
 }
 // 列表分页信息
 let pageInfo = reactive({
@@ -62,13 +70,8 @@ let pageInfo = reactive({
 })
 // 分页跳转
 const toPage = async (page) => {
-  if (page == pageInfo.page || page > pageInfo.pageCount || page <= 0) return
-  window.scrollTo({
-    top: 0,
-    behavior: 'auto'
-  })
   pageInfo.page = page
-  loadBlog()
+  loadBlog(page)
 }
 watchEffect(() => {
   pageInfo.tags = [...props.tagSet]
