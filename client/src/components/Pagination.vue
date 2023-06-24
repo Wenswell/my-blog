@@ -18,8 +18,12 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { ArrowBack, ArrowForward } from "@vicons/ionicons5";
+import { useRoute, useRouter } from 'vue-router';
+import { updateQueryParameter } from '@/utils/index'
+const route = useRoute()
+const router = useRouter()
 
 const { pageInfo } = defineProps({
   pageInfo: {
@@ -38,11 +42,19 @@ const { pageInfo } = defineProps({
      */
   },
 })
+// const updateQuery = updateQueryParameter(route, router,'page',)
 
 const emit = defineEmits(['to-page'])
 function handleClick(page) {
+  console.log("page", page)
+  updateQueryParameter(route, router, 'page', page!==1, page)
   emit('to-page', page)
 }
+onMounted(()=>{
+  if (route.query.page) {
+    handleClick(route.query.page)
+  } else handleClick(1)
+})
 
 
 /**

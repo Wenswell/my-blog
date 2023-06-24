@@ -81,7 +81,8 @@ const { defalut } = defineProps({
 
     .left {
       margin-bottom: $gap;
-      width: 45rem;
+      min-width: 45rem;
+      max-width: 60vw;
       grid-column: 1 / 2;
       grid-row: 1 / -1;
     }

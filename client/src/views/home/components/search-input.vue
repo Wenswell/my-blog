@@ -9,7 +9,7 @@
 
 <script setup>
 import { Search } from "@vicons/ionicons5";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 // const message = inject('message')
 
 // 同步 关键词 至 父组件
@@ -33,7 +33,7 @@ let keyword = ref(null)
 import { useRoute, useRouter } from 'vue-router';
 const route = useRoute()
 const router = useRouter()
-watchEffect(() => {
+onMounted(() => {
   if (route.query.keyword) keyword.value = route.query.keyword
 })
 import { updateQueryParameter } from '@/utils/index'
