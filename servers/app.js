@@ -61,6 +61,7 @@ app.use(require('@utils/token/token.middleware'))
 app.use(require('@router'))
 
 // 监听端口
-app.listen(port, () => {
-  console.log(`服务启动成功: http://localhost:${port}/`)
-})
+const server = app.listen(port, '0.0.0.0', () => {
+  const { address, port } = server.address();
+  console.log(`服务启动成功: http://${address}:${port}/`);
+});

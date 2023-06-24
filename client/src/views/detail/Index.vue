@@ -10,7 +10,7 @@
       </div> -->
       <MdPreview class="main" :editorId="id" :modelValue="blogDetail.content" />
     </template>
-    <template v-slot:aside>
+    <template v-slot:top>
       <div class="aside">
 
         <div class="aside-title">
@@ -63,7 +63,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .aside {
-  position: fixed;
   color: $clr-text-pri;
 
   &-title {

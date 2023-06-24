@@ -35,7 +35,7 @@ const loadBlog = async () => {
     pageInfo.pageCount = pageInfo.pageSize ? Math.ceil(pageInfo.count / pageInfo.pageSize) : 0
 
 
-    if ((pageInfo.categoryId||pageInfo.keyword || pageInfo.tags.length) && result.data.result.count) {
+    if ((pageInfo.categoryId || pageInfo.keyword || pageInfo.tags.length) && result.data.result.count) {
       // 搜索完成
       message.success(`共 ${pageInfo.count} 条结果`)
     } else if (pageInfo.keyword || pageInfo.tags.length) {
@@ -62,11 +62,6 @@ let pageInfo = reactive({
 })
 // 分页跳转
 const toPage = async (page) => {
-  if (page == pageInfo.page || page > pageInfo.pageCount || page <= 0) return
-  window.scrollTo({
-    top: 0,
-    behavior: 'auto'
-  })
   pageInfo.page = page
   loadBlog()
 }

@@ -152,6 +152,7 @@ const createPaginator = computed(() => {
 
 <style lang="scss" scoped>
 .pagination {
+  max-width: 90vw;
   grid-template-columns: repeat(auto-fill, minmax($l-gap, 1fr));
 
   >* {

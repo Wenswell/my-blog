@@ -5,21 +5,15 @@
       <ShowArticleList :tagSet="tagSet" :keywordRef="keywordRef" ref="articleList" />
 
     </template>
-    <template v-slot:aside>
-      <!-- 这里是侧边栏内容 -->
-      <div class="search-box">
-        <SearchInput v-model:valueModel="keywordRef" ref="searchBar" />
-        <div class="tags-box">
-          <div @click="searchAll" class="tag-title center--text">
-            <n-icon color="gray" size="1rem" :component="PricetagsOutline" />
-            标签
-          </div>
-          <span @click="onAddTag(tag.name)" :class="{ active: tagSet.has(tag.name) }" class="tag center--text"
-            v-for="tag in getTags">
-            {{ tag.name }}
-          </span>
-        </div>
-      </div>
+    <template v-slot:top>
+      <!-- 这里是主要内容 -->
+      <SearchInput  style="min-width: 10rem;" v-model:valueModel="keywordRef" ref="searchBar" />
+
+    </template>
+    <template v-slot:bottom>
+
+      <ShowTagsBox @searchAll="searchAll" v-model:tagsRef="tagsRef"  />
+
     </template>
   </MainAsideBox>
 </template>
@@ -28,9 +22,10 @@
 import SearchInput from './components/search-input.vue'
 import MainAsideBox from "@/components/MainAsideBox.vue";
 import ShowArticleList from '@/components/ShowArticleList.vue'
+import ShowTagsBox from '@/components/ShowTagsBox.vue'
 
-import { computed, onMounted, reactive, ref } from "vue";
-import { PricetagsOutline } from "@vicons/ionicons5";
+import { computed, ref } from "vue";
+
 
 const articleList = ref(null)
 const searchBar = ref(null)
@@ -47,26 +42,22 @@ const searchAll = () => {
 // 绑定至子组件用于搜索
 const keywordRef = ref(null)
 // 绑定至子组件用于搜索
-const tagsRef = ref([])
+// const tagsRef = ref([])
 // 转一份 set 方便查找去重
+let tagsRef = ref([])
+// let tagSet = ref([])
+
 const tagSet = computed(() => {
   return new Set(tagsRef.value)
 })
+// const message = inject('message')
+// watchEffect(()=>{
+//   // tagSet = new Set(someRef || [])
+//   console.log("someRef", someRef)
+//   console.log("tagSet", tagSet)
+  
+// })
 
-// 用于展示、点击添加
-const getTags = ref([])
-const onAddTag = (tag) => {
-  const uniqueTags = tagSet.value
-  // 已选中则去除，未选中则添加
-  uniqueTags.has(tag) ? uniqueTags.delete(tag) : uniqueTags.add(tag);
-  tagsRef.value = [...uniqueTags];
-  // loadBlog();
-}
-const axios = inject('axios')
-onMounted(() => {
-  // 加载标签
-  axios.get('/blog/get_tags').then(result => getTags.value = result.data.result)
-})
 </script>
 
 <style lang="scss" scoped>
@@ -79,47 +70,4 @@ onMounted(() => {
   -webkit-text-stroke: 1px $clr-back;
 }
 
-.tags-box {
-  margin-block: $gap;
-  display: block;
-
-  .tag-title {
-    height: $gap*2;
-    padding-left: $s-gap;
-    gap: $s-gap;
-    justify-content: normal;
-    overflow: hidden;
-    position: relative;
-    transition: transform 200ms;
-
-    @extend .active-effect-enlarge;
-    &:hover{
-      color: $clr-text-pri;
-    }
-    
-    &::after {
-      transition-property: all, color;
-      transition-duration: 50ms, 150ms;
-      content: '点击移除全部标签 & 清空搜索栏';
-      color: $clr-back-grey;
-      position: absolute;
-      left: 25%;
-      white-space: nowrap;
-      zoom: 0.8;
-    }
-
-    &:hover::after {
-      color: $clr-text-pri;
-      content: '移除全部标签 & 清空搜索栏 (查看全部)';
-    }
-  }
-
-  .tag {
-    padding-inline: $s-gap;
-    margin-top: $gap;
-    margin-right: 1rem;
-    display: inline-block;
-    @extend .active-effect;
-  }
-}
 </style>

@@ -1,4 +1,5 @@
 # servers
+
 ```bash
 mkdir client
 mkdir servers
@@ -89,10 +90,10 @@ yarn add unplugin-vue-components -D
 
 ```
 
-
 # 踩坑
 
 ## db.run 不能查询
+
 ```js
 const getCategorySql = 'SELECT * FROM `category`'
 // 查询使用db.all而不是db.run
@@ -110,7 +111,6 @@ app.use(multer({
 }).any())
 ```
 
-
 ## 保留关键字
 
 ```js
@@ -119,9 +119,7 @@ app.use(multer({
 // 使用了new作为参数
 ```
 
-
 ## 绑定
-
 
 - :searchKeyword 是Props绑定,只有在组件初始化的时候才会生效
 - @searchKeyword 是事件绑定,可以响应组件内部的更改和用户操作
@@ -140,7 +138,6 @@ app.use(multer({
 
 而Props绑定只是一个静态的传值,不会响应后续的变化。
 
-
 ## 依赖变动
 
 - 添加、移除操作之后最好清除缓存 `yarn cache clean`
@@ -154,11 +151,6 @@ app.use(multer({
 
 因此，如果在父组件中使用 `const valueModel = reactive([])` 来定义 `valueModel`，则在子组件中通过 `props` 接收到的是一个响应式对象，而不是数组。这时，如果直接在子组件中修改 `valueModel` 的值，就会导致 Vue 无法正确地监听到值的变化，从而无法实现自动更新视图的效果。
 
-
-
-
-
-
 ## SQLite语法
 
 不能有多余的逗号`,`
@@ -171,14 +163,16 @@ app.use(multer({
 FROM blog, 
 ```
 
-
 ## 绑定props的固定格式
 
 父组件
+
 ```vue
 <someComponent v-model:valueModel="someRef"  />
 ```
+
 子组件
+
 ```js
 const { valueModel } = defineProps({
   valueModel: { type: String }
@@ -186,7 +180,6 @@ const { valueModel } = defineProps({
 const emit = defineEmits(['update:value-model'])
 emit('update:value-model', keyword.value);
 ```
-
 
 ## SQL语法支持问题
 
@@ -228,4 +221,25 @@ SET blogs_num = (
     FROM blog
     WHERE blog.category_id = category.id
   );`
+```
+
+## route和router都是undefined
+
+```js
+// utils.js
+import { useRoute, useRouter } from 'vue-router';
+const route = useRoute()
+const router = useRouter()
+// 2个输出都是undefined
+console.log("route", route)
+console.log("router", router)
+```
+
+在 Vue.js 中，你需要在一个组件中使用 `useRoute` 和 `useRouter`，而不能在模块化的代码中使用。这是因为 `useRoute` 和 `useRouter` 都是 Vue.js 的组合式 API，需要在组件的上下文中才能正常工作。
+
+如果你需要在模块化的代码中使用路由相关的 API，可以将路由实例作为参数传递给模块中的函数。
+
+```javascript
+// utils.js
+export function updateQueryParameter(router, route, paramType, shouldAdd, paramValue) {}
 ```

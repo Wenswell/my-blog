@@ -1,14 +1,23 @@
 <template>
   <main class="main-box">
-    <slot></slot>
-    <div class="grid-box" v-if="!defalut">
-      <div class="center-main">
+    
+    <div class="flex-box" v-if="!defalut">
+      <div class="left">
+        <slot></slot>
         <slot name="main"></slot>
       </div>
-      <aside class="center-aside">
-        <slot name="aside"></slot>
+      <aside class="right-top">
+        <slot name="top"></slot>
+      </aside>
+      <aside class="right-bottom">
+        <slot name="bottom"></slot>
       </aside>
     </div>
+
+    <footer class="footer">
+      BY-NC-SA 3.0 TW
+      2010~2023 BLOG ‧ Powered by BLOG
+    </footer>
   </main>
 </template>
 
@@ -25,28 +34,78 @@ const { defalut } = defineProps({
 <style lang="scss" scoped>
 .main-box {
   padding-top: $header-height + $gap;
-  max-width: $main-width;
+  // max-width: $main-width;
+  width: 100%;
   margin-inline: auto;
-  min-height: calc(100vh - #{$footer-height} + 1px);
+
+  // height: calc(100vh - #{$footer-height} );
+  overflow: scroll;
   // min-height: calc(100vh - #{$footer-height});
   // min-height: calc(100vh - #{$gap} - #{$header-height} - #{$footer-height});
 }
 
-.grid-box {
-  display: grid;
-  grid-template-columns: 1fr 20rem;
-  gap: $gap;
+.flex-box {
+  min-height: calc(100vh - #{$gap} - #{$mico-gap} - #{$header-height});
 
-  .center-aside {
-    display: flex;
-    flex-direction: column;
-    max-width: 20rem;
-  }
+  display: flex;
+  align-content: flex-start;
+  gap: $s-gap;
+  margin-inline: auto;
+  flex-wrap: wrap;
 
-  .center-main {
+  .left,
+  .right-bottom,
+  .right-top {
     width: 100%;
-    margin-bottom: $gap;
+    flex-grow: 1;
+    margin-inline: auto;
   }
 
+
+  .right-top {
+    order: -1;
+  }
+
+}
+
+
+@media screen and (min-width:60rem) {
+  .flex-box {
+    display: grid;
+    grid-template-rows: 3rem auto;
+    // grid-auto-flow: dense; 
+    // grid-auto-rows: minmax(auto, auto);
+
+    justify-content: center;
+    column-gap: $gap;
+
+    .left {
+      margin-bottom: $gap;
+      width: 45rem;
+      grid-column: 1 / 2;
+      grid-row: 1 / -1;
+    }
+
+    .right-top {
+      max-width: 15rem;
+
+      grid-column: 2 / 3;
+      grid-row: 1 / 2;
+    }
+
+    .right-bottom {
+      max-width: 15rem;
+
+      grid-column: 2 / 3;
+      grid-row: 2 / -1;
+
+    }
+  }
+}
+
+
+.footer {
+  height: $footer-height;
+  background-color: $clr-back;
 }
 </style>
