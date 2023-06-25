@@ -13,8 +13,9 @@
   -webkit-user-select: none;
   cursor: pointer;
 }
+
 // button专用 把按钮当span用
-.plain {
+button{
   color: $clr-text-pri;
   background-color: $clr-back;
   border: none;

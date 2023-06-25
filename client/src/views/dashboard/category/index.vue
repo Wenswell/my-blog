@@ -49,7 +49,7 @@ import { onMounted, reactive, ref } from "vue";
 const axios = inject('axios')
 const message = inject('message')
 
-import AdminStore from '@/store/index'
+import {AdminStore} from '@/store/index'
 const adminStore = AdminStore()
 
 const showAddModal = ref(false)

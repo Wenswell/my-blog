@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@lezer/common": "^1.0.0",
+    "@vueuse/core": "^10.2.0",
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-vue": "^5.1.12",
     "axios": "^1.4.0",
+    "dayjs": "^1.11.8",
     "initialize-css": "^1.4.0",
     "lodash": "^4.17.21",
     "md-editor-v3": "^4.2.0",

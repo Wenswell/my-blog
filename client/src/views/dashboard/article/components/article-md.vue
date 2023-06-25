@@ -1,22 +1,28 @@
 <template>
+  <div class="md-page">
+    <div class="info" v-text="topInfo">
 
-  <div class="top">
-    <div class="top-left">
-      <n-input class="top-title" v-model:value="addArticle.title" placeholder="标题" />
-      <n-input class="top-title" v-model:value="addArticle.description" placeholder="标sss题" />
     </div>
-    <div class="top-right">
-      <n-select class="top-category" v-model:value="addArticle.categoryId" :options="categoryOptions"
-        placeholder="选择分类" />
 
-      <TagSelect class="selector" :updateOriginTag="updateArticle.tags" v-model:valueModel="addArticle.tags" />
+    <div class="top">
+      <div class="top-left">
+        <n-input class="top-title" v-model:value="addArticle.title" placeholder="标题" />
+        <n-input v-model:value="addArticle.description" type="textarea" :maxlength="200" show-count
+          placeholder="文章描述，不要太长" />
+      </div>
+      <div class="top-right">
+        <n-select class="top-category" v-model:value="addArticle.categoryId" :options="categoryOptions"
+          placeholder="选择分类" />
 
-      <n-button type="primary" :disabled="!addArticle.title.length" class="top-btn" @click="onAdd">提交</n-button>
+        <TagSelect class="selector" :updateOriginTag="updateArticle.tags" v-model:valueModel="addArticle.tags" />
+
+        <n-button type="primary" :disabled="!addArticle.title.length" class="top-btn" @click="onAdd">提交</n-button>
+      </div>
     </div>
+
+    <md-editor class="editor" v-model="addArticle.content" @onChange="onChange" @onUploadImg="onUploadImg"
+      @onSave="onSave" />
   </div>
-
-  <md-editor class="editor" v-model="addArticle.content" @onChange="onChange" @onUploadImg="onUploadImg"
-    @onSave="onSave" />
 </template>
 
 <script setup>
@@ -157,16 +163,22 @@ const loadCategory = async () => {
   });
 }
 
+let topInfo = ref('')
 onMounted(() => {
   loadCategory()
   // 如果ID不是默认的0说明是修改文章
   if (Boolean(updateArticle?.id)) {
-    console.log("updateArticle", updateArticle)
-    console.log("addArticle", addArticle)
+    // console.log("updateArticle?.id", updateArticle?.id)
+    // console.log("addArticle?.id", addArticle?.id)
+    // console.log("updateArticle", updateArticle)
+    // console.log("addArticle", addArticle)
+    if (updateArticle?.id !== addArticle.id) topInfo.value = `修改文章 [ ${updateArticle.title} ]`
     // addArticle = { ...addArticle, ...updateArticle }
     Object.assign(addArticle, updateArticle)
-    console.log("addArticle", addArticle)
-  }
+    addArticle.categoryId = updateArticle.category_id
+    // console.log("addArticle", addArticle)
+  } else topInfo.value = `新增文章`
+
 })
 </script>
 <style lang="scss" scoped>

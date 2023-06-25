@@ -4,15 +4,15 @@
   <div class="pagination grid--margin">
     <!--———— 1.1 分页器 左箭头 ——————-->
     <button :disabled="pageInfo.page <= 1" :class="{ 'disable': pageInfo.page <= 1 }"
-      class="pagination-arrow center--text plain" @click="handleClick(pageInfo.page - 1)"><n-icon size="1.1rem"
+      class="pagination-arrow center--text" @click="handleClick(pageInfo.page - 1)"><n-icon size="1.1rem"
         :component="ArrowBack" /></button>
     <!--———— 1.3 分页器 右箭头 ——————-->
     <button :disabled="pageInfo.page >= pageInfo.pageCount" :class="{ 'disable': pageInfo.page >= pageInfo.pageCount }"
-      class="pagination-arrow center--text plain" @click="handleClick(pageInfo.page + 1)"><n-icon size="1.1rem"
+      class="pagination-arrow center--text" @click="handleClick(pageInfo.page + 1)"><n-icon size="1.1rem"
         :component="ArrowForward" /></button>
 
     <!--———— 1.2 分页器 页数 ——————-->
-    <button :class="{ active: page.n == pageInfo.page }" class="pagination-item center--text plain"
+    <button :class="{ active: page.n == pageInfo.page }" class="pagination-item center--text"
       @click="handleClick(page.n)" v-for="page in createPaginator">{{ page.d }}</button>
   </div>
 </template>

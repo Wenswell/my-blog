@@ -1,7 +1,7 @@
 <template>
   <div class="box-blog">
     <!--———— 1.2 文章卡片列表 ——————-->
-    <button class="blog plain" :style="{ cursor: (editModel ? 'default' : 'pointer') }" @click="toDetail(blog.id)"
+    <button class="blog" :style="{ cursor: (editModel ? 'default' : 'pointer') }" @click="toDetail(blog.id)"
       v-for="(blog, index) in blogList">
 
       <!--———— 1.2.1 文章 标题 ——————-->
@@ -34,8 +34,8 @@
       </div>
 
       <template v-if="editModel">
-        <n-button @click="toUpdate(blog.id)" tertiary type="info">修改</n-button>
-        <n-button @click="onDelete(blog.id, blog.title)" tertiary type="error">删除</n-button>
+        <button class="btn-edit" @click="toUpdate(blog.id)">修改</button>
+        <button class="btn-del" @click="onDelete(blog.id, blog.title)">删除</button>
       </template>
     </button>
   </div>
@@ -46,6 +46,7 @@ import { onMounted } from 'vue';
 import { FolderOpenOutline, PricetagsOutline } from "@vicons/ionicons5";
 import { useRoute, useRouter } from 'vue-router';
 const message = inject('message')
+const axios = inject('axios')
 const route = useRoute()
 const router = useRouter()
 
@@ -76,12 +77,13 @@ onMounted(() => {
   // message.success(1)
   if (editModel) {
     toDetail = () => { }
+    toTagOrCate = () => { }
   }
 })
 
 let isTagsTwice = false
 let isCategoryTwice = false
-const toTagOrCate = (page, params) => {
+let toTagOrCate = (page, params) => {
 
   if (page == 'tags') {
     if (isTagsTwice == params) {
@@ -157,6 +159,33 @@ const onDelete = async (id, title) => {
   background-color: $clr-back;
   border: $mico-gap solid transparent;
   transition: all 300ms;
+  position: relative;
+
+  .btn-edit,
+  .btn-del {
+    @extend .center--text;
+    position: absolute;
+    top: 0;
+    right: 11vw;
+    height: 100%;
+    width: 10vw;
+    opacity: 0.2;
+    border-inline: 2px solid transparent;
+    transition: opacity 300ms;
+    background-color: moccasin;
+    
+    &:hover,
+    &:focus {
+      opacity: 1;
+      border-color: $primary-color;
+    }
+  }
+  
+  .btn-del {
+    right: 0;
+    border-right: none;
+    background-color: lightcoral;
+  }
 
   &:hover {
     border: $mico-gap solid $primary-color;

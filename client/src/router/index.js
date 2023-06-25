@@ -9,19 +9,19 @@ const routes = [
     redirect: '/home',
     component: () => import('@/views/Index.vue'),
     children: [
-      { path: 'home', name: 'home', component: () => import('@/views/home/index.vue'), },
+      { path: 'home', name: 'home', component: () => import('@/views/index/home/index.vue'), },
       { path: 'category', redirect: 'category/0', },
-      { path: 'category/:type', name: 'category', component: () => import('@/views/category/index.vue'), },
-      { path: 'tags', name: 'tags', component: () => import('@/views/tags/index.vue'), },
+      { path: 'category/:type', name: 'category', component: () => import('@/views/index/category/index.vue'), },
+      { path: 'tags', name: 'tags', component: () => import('@/views/index/tags/index.vue'), },
       // { path: 'archive', component: () => import('@/views/archive/index.vue'), },
-      { path: 'about', name: 'about', component: () => import('@/views/about/index.vue'), },
+      { path: 'about', name: 'about', component: () => import('@/views/index/about/index.vue'), },
       { path: 'detail/:id', name: 'detail', component: () => import('@/views/detail/Index.vue') },
       // { path: 'detail', component: () => import('@/views/detail/Index.vue') },
     ]
   },
   {
   },
-  { path: '/login', name: 'login', component: () => import('@/views/auth/Login.vue') },
+  { path: '/login', name: 'login', component: () => import('@/views/dashboard/auth/Login.vue') },
   {
     path: '/dash', name: 'dash', component: () => import('@/views/dashboard/Index.vue'),
     redirect: '/dash/article',

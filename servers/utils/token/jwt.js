@@ -5,7 +5,7 @@ const { getKey, getNewKey } = require('@config')
 const ADMIN_KEY = getKey('ADMIN_SECRET_KEY') || getNewKey('ADMIN_SECRET_KEY')
 
 function generateAccessToken(payload) {
-  return jwt.sign(payload, ADMIN_KEY, { expiresIn: '1h' })
+  return jwt.sign(payload, ADMIN_KEY, { expiresIn: '10s' })
 }
 
 function generateRefreshToken(payload) {

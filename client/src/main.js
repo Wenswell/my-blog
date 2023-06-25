@@ -19,13 +19,13 @@ import axios from 'axios'
 axios.defaults.baseURL = 'http://192.168.1.5:3123/'
 
 // 引入store
-import AdminStore from '@/store/index'
+import { AdminStore } from '@/store/index'
 const adminStore = AdminStore()
 
 // 使用拦截器添加token
-axios.interceptors.request.use((config)=>{
-  config.headers.accessToken = adminStore.accessToken 
-  config.headers.refreshToken = adminStore.refreshToken 
+axios.interceptors.request.use((config) => {
+  config.headers.accessToken = adminStore.accessToken
+  config.headers.refreshToken = adminStore.refreshToken
   return config
 })
 

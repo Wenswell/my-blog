@@ -1,4 +1,4 @@
-const { verifyToken } = require('@utils/token/jwt')
+const { verifyToken, generateAccessToken } = require('@utils/token/jwt')
 const ADMIN_TOKEN_PATH = '/_token'
 
 module.exports = async (request, result, next) => {
@@ -14,15 +14,15 @@ module.exports = async (request, result, next) => {
 
       if (!verifyAccess) {
         result.send({
-          code: 401,
-          msg: '需要更新accesstoken',
-          data: null
+          code: 204,
+          msg: '需要更新 accesstoken',
+          data: { accesstoken: generateAccessToken({a:1}) }
         })
         return
       }
       if (!verifyRefresh) {
         result.send({
-          code: 403,
+          code: 401,
           msg: '需要登录',
           data: null
         })
