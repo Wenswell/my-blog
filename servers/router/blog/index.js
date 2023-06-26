@@ -107,17 +107,17 @@ router.get('/search', async (request, result) => {
   // 如果 categoryId 存在则添加至查询语句及参数列表中
   if (newCategoryId != defaultCategoryId) {
     // if (newCategoryId == -1) {
-      // whereSql.push(' `category_id` IS NULL ')
+    // whereSql.push(' `category_id` IS NULL ')
     // } else {
-      whereSql.push(' `category_id`= ? ')
-      params.push(newCategoryId)
+    whereSql.push(' `category_id`= ? ')
+    params.push(newCategoryId)
     // }
   }
 
   // 如果 tags 存在则添加至查询语句及参数列表中
   if (newTags != defaultTags) {
 
-    const tagsArr = newTags.split(',')
+    const tagsArr = typeof newTags == 'object' ? newTags : newTags.split(',')
 
     if (tagsArr.length > 0) {
       tagsArr.forEach(item => {
@@ -294,13 +294,13 @@ router.post('/_token/add', async (request, result) => {
     });
   }
 
-  let { title, categoryId, tags, content } = value
-  if (!categoryId ) categoryId = -1
+  let { title, categoryId, tags, content, description } = value
+  if (!categoryId) categoryId = -1
   const id = genid.NextId()
   const create_time = new Date().getTime()
 
-  const insertBlogSql = 'INSERT INTO `blog` (`id`, `title`, `category_id`, `tags`,`content`, `create_time`) VALUES (?,?,?,?,?,?)'
-  const params = [id, title, categoryId, tags, content, create_time]
+  const insertBlogSql = 'INSERT INTO `blog` (`id`, `title`, `category_id`, `tags`,`description`,`content`, `create_time`) VALUES (?,?,?,?,?,?,?)'
+  const params = [id, title, categoryId, tags, description, content, create_time]
 
   try {
     await db.async.run(insertBlogSql, params)

@@ -1,9 +1,10 @@
 <template>
-  <header class="header" :class="{ 'hidden': isNavHidden }">
+  <!-- <header class="header" :class="{ 'hidden': isNavHidden }" ref="header"> -->
+  <header class="header" ref="header">
     <div class="header-title">
-      my-blog {{ isNavHidden }}
+      my-blog -- {{ test }}
     </div>
-    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <input ref="check" type="checkbox" id="nav-toggle" class="nav-toggle">
     <nav class="header-nav">
       <ul>
         <button :class="{ active: item.name == route.name }" class="nav-item center--text" @click="toPage(item)"
@@ -21,6 +22,7 @@
 
 <script setup>
 import { Menu, HomeOutline, FilterCircleOutline, PricetagsOutline, ArchiveOutline, WalkOutline, SettingsOutline, } from "@vicons/ionicons5";
+import { onMounted } from "vue";
 import { useRoute, useRouter } from 'vue-router';
 const route = useRoute()
 const router = useRouter()
@@ -33,15 +35,32 @@ const topBarItem = [
   { title: '后台', icon: SettingsOutline, href: '/login', name: 'login', },
 ]
 
+const check = ref(null)
 const toPage = (item) => {
+  check.value.checked = false
   item.name == route.name ? '' : router.push(item.href)
 }
 
-const { isNavHidden } = defineProps({
-  isNavHidden: {
-    type: Boolean,
-    required: true
-  }
+// const { isNavHidden } = defineProps({
+//   isNavHidden: {
+//     type: Boolean,
+//     required: true
+//   }
+// })
+const header = ref(null)
+const test = ref(false)
+const lastScrollTop = ref(0)
+
+onMounted(() => {
+  window.addEventListener('scroll', () => {
+    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    if (scrollTop > lastScrollTop.value && scrollTop > header.value.offsetHeight) {
+      test.value = true;
+    } else {
+      test.value = false;
+    }
+    lastScrollTop.value = scrollTop <= 0 ? 0 : scrollTop;
+  }, false);
 })
 
 </script>

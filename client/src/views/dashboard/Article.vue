@@ -25,17 +25,17 @@
 </template>
 
 <script setup>
-const axios = inject('axios')
 const message = inject('message')
 
 import { computed, onMounted, reactive, ref } from "vue";
 import Pagination from "@/components/Pagination.vue";
 import ArticleList from '@/components/ArticleList.vue'
-import MdPage from './components/article-md.vue'
+import MdPage from './article-md.vue'
+import api from "@/api";
 
 // <!--———— 0. 顶部标签 ——————-->
-const tabValue = ref('md-add')
-// const tabValue = ref('list')
+// const tabValue = ref('md-add')
+const tabValue = ref('list')
 const changeTab = (type) => {
   tabValue.value = type
 }
@@ -45,14 +45,20 @@ const changeTab = (type) => {
 let blogList = ref([])
 // 加载文章列表
 const loadBlog = async () => {
-  const result = await axios.get(`/blog/search?categoryId=${pageInfo.categoryId}&keyword=${pageInfo.keyword}&page=${pageInfo.page}&pageSize=${pageInfo.pageSize}`)
-  if (result.data.code === 200) {
-    blogList.value = result.data.result.list
-    pageInfo.count = result.data.result.count
+  const result = await api.blogSearch({
+    keyword: pageInfo.keyword,
+    categoryId: pageInfo.categoryId,
+    tags: pageInfo.tags,
+    page: pageInfo.page,
+    pageSize: pageInfo.pageSize,
+  })
+  if (result.code === 200) {
+    blogList.value = result.result.list
+    pageInfo.count = result.result.count
     pageInfo.pageCount = pageInfo.pageSize ? Math.ceil(pageInfo.count / pageInfo.pageSize) : 0
-    // message.success(result.data.msg)
+    // message.success(result.msg)
   } else {
-    message.error(result.data.msg)
+    message.error(result.msg)
   }
 }
 // 列表分页信息
@@ -79,23 +85,19 @@ let updateArticle = reactive({
   categoryId: undefined,
   title: '',
   content: '',
-  tags: "",
+  tags: '',
   description: '',
 })
 
 // 获取要更新的文章信息并去更新页面
 const getUpdateArticleId = async (id) => {
-  const result = await axios.get(`/blog/detail?id=${id}`)
-  console.log("result", result.data.result[0])
-  console.log("result.data.result[0]", result.data.result[0])
-  Object.assign(updateArticle, result.data.result[0])
+  const result = await api.blogGetDetailById({ id })
+  Object.assign(updateArticle, result.result[0])
   changeTab('md-add')
 }
 
 onMounted(() => {
-
   loadBlog()
-
 })
 </script>
 <style lang="scss" scoped></style>

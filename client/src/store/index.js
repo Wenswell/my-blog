@@ -2,20 +2,21 @@ import { defineStore } from 'pinia'
 import { useStorage } from '@vueuse/core'
 
 const STORE_NAME = 'auth_info'
+const DEFAULT_INFO = 
+{
+  id: 0,
+  account: '',
+  password: '',
+  accessToken: '',
+  refreshToken: '',
+}
 
 // useStore 可以是 useUser、useCart 之类的任何东西
 // 第一个参数是应用程序中 store 的唯一 id
 const AdminStore = defineStore('admin', {
   state: () => {
     return {
-      user: useStorage(STORE_NAME,
-        {
-          id: 0,
-          account: '',
-          password: '',
-          accessToken: '',
-          refreshToken: '',
-        },
+      user: useStorage(STORE_NAME,DEFAULT_INFO,
         localStorage,
         { mergeDefaults: true, },
       )
@@ -30,7 +31,10 @@ const AdminStore = defineStore('admin', {
     },
     updateAccessToken(newToken){
       this.user.accessToken = newToken
-    }
+    },
+    cleanInfo(){
+      this.user = DEFAULT_INFO
+    },
   },
   getters: {
     getUserInfo(state) {

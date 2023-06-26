@@ -52,6 +52,7 @@ const searchAll = () => {
 
 // 用于展示、点击添加
 import { updateQueryParameter } from '@/utils/index'
+import api from "@/api";
 const getTags = ref([])
 const onAddTag = (tag) => {
   const uniqueTags = localTagSet.value
@@ -61,18 +62,17 @@ const onAddTag = (tag) => {
   updateQueryParameter(route, router, 'tags', tagsRef.value.length, tagsRef.value.join(','))
   // loadBlog();
 }
-const axios = inject('axios')
 onMounted(() => {
   // 加载标签
-  axios.get('/blog/get_tags').then(result => {
+  api.getTags().then(result => {
     const randomCount = Math.floor(Math.random() * (10 - 5 + 1)) + 5;
     getTags.value = isShowAll ?
-      result.data.result
-      : result.data.result
+      result.result
+      : result.result
         .sort(() => Math.random() - 0.5)
         .slice(0, randomCount)
     console.log("getTags", getTags)
-    if (route.query.tags.length) {
+    if (route?.query?.tags?.length) {
       const tags = route.query.tags.split(',');
       tags.forEach(tag => {
         const tags = route.query.tags.split(',');

@@ -45,8 +45,8 @@
 import { onMounted } from 'vue';
 import { FolderOpenOutline, PricetagsOutline } from "@vicons/ionicons5";
 import { useRoute, useRouter } from 'vue-router';
+import api from '@/api';
 const message = inject('message')
-const axios = inject('axios')
 const route = useRoute()
 const router = useRouter()
 
@@ -127,12 +127,12 @@ const onDelete = async (id, title) => {
     positiveText: "删除",
     negativeText: "取消",
     onPositiveClick: async () => {
-      const result = await axios.delete(`/blog/_token/delete?id=${id}`)
-      if (result.data.code === 200) {
-        message.success(`文章 [ ${title} ] ${result.data.msg}`)
+      const result = await api.blogDeleteById({id})
+      if (result.code === 200) {
+        message.success(`文章 [ ${title} ] ${result.msg}`)
         emit('load-blog')
       } else {
-        message.error(result.data.msg)
+        message.error(result.msg)
       }
     },
     onNegativeClick: () => { }

@@ -6,8 +6,8 @@
 </template>
 
 <script setup>
-const axios = inject('axios')
 const message = inject('message')
+import api from "@/api";
 import Pagination from "@/components/Pagination.vue";
 import { computed, onMounted, reactive, ref, watchEffect } from "vue";
 // import SearchInput from './components/search-input.vue'
@@ -28,21 +28,27 @@ let noBlog = ref('')
 let timer = null
 const loadBlog = async (page) => {
   if (timer) return
-  if(!page) pageInfo.page = 1
+  if (!page) pageInfo.page = 1
 
   noBlog.value = ''
   let result = null
   timer = setTimeout(async () => {
     // 这里是需要节流的代码
-    result = await axios.get(`/blog/search?categoryId=${pageInfo.categoryId}&tags=${pageInfo.tags}&keyword=${pageInfo.keyword}&page=${pageInfo.page}&pageSize=${pageInfo.pageSize}`)
+    result = await api.blogSearch({
+      categoryId: pageInfo.categoryId,
+      tags: pageInfo.tags,
+      keyword: pageInfo.keyword,
+      page: pageInfo.page,
+      pageSize: pageInfo.pageSize,
+    })
     timer = null
-    if (result.data.code === 200) {
-      blogList.value = result.data.result.list
-      pageInfo.count = result.data.result.count
+    if (result.code === 200) {
+      blogList.value = result.result.list
+      pageInfo.count = result.result.count
       pageInfo.pageCount = pageInfo.pageSize ? Math.ceil(pageInfo.count / pageInfo.pageSize) : 0
-  
-  
-      if ((pageInfo.categoryId || pageInfo.keyword || pageInfo.tags.length) && result.data.result.count) {
+
+
+      if ((pageInfo.categoryId || pageInfo.keyword || pageInfo.tags.length) && result.result.count) {
         // 搜索完成
         message.success(`共 ${pageInfo.count} 条结果`)
       } else if (pageInfo.keyword || pageInfo.tags.length) {
@@ -52,9 +58,9 @@ const loadBlog = async (page) => {
         // 没有结果
         noBlog.value = `这是一个空的分类`
       }
-  
+
     } else {
-      message.error(result.data.msg)
+      message.error(result.msg)
     }
   })
 }
@@ -110,7 +116,7 @@ defineExpose({
 // // 加载标签
 // const loadTags = async () => {
 //   const result = await axios.get('/blog/get_tags')
-//   getTags.value = result.data.result
+//   getTags.value = result.result
 // }
 
 // // 清空条件，搜索全部

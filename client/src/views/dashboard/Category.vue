@@ -46,10 +46,10 @@
 
 <script setup>
 import { onMounted, reactive, ref } from "vue";
-const axios = inject('axios')
 const message = inject('message')
 
 import {AdminStore} from '@/store/index'
+import api from "@/api";
 const adminStore = AdminStore()
 
 const showAddModal = ref(false)
@@ -70,16 +70,16 @@ const toUpdate = async (category) => {
 }
 
 const onUpdate = async () => {
-  const result = await axios.put('/category/_token/update', {
+  const result = await api.categoryUpdate({
     id: updateCategory.id,
     type: updateCategory.type,
   })
-  if (result.data.code === 200) {
+  if (result.code === 200) {
     loadDatas()
-    message.success(result.data.msg)
+    message.success(result.msg)
     showUpdateModal.value = false
   } else {
-    message.error(result.data.msg)
+    message.error(result.msg)
   }
 }
 
@@ -91,12 +91,12 @@ const onDelete = async (category) => {
     positiveText: "删除",
     negativeText: "取消",
     onPositiveClick: async () => {
-      const result = await axios.delete(`/category/_token/delete?id=${category.id}`)
-      if (result.data.code === 200) {
+      const result = await api.categoryDeleteById({id:category.id})
+      if (result.code === 200) {
         loadDatas()
-        message.success(result.data.msg)
+        message.success(result.msg)
       } else {
-        message.error(result.data.msg)
+        message.error(result.msg)
       }
     },
     onNegativeClick: () => { }
@@ -104,76 +104,20 @@ const onDelete = async (category) => {
 }
 
 const onAdd = async (id) => {
-  const result = await axios.post('/category/_token/add', { type: addCategory.type })
-  if (result.data.code === 200) {
+  const result = await api.categoryAdd({ type: addCategory.type })
+  if (result.code === 200) {
     showAddModal.value = false
     loadDatas()
-    message.success(result.data.msg)
+    message.success(result.msg)
   } else {
-    message.error(result.data.msg)
+    message.error(result.msg)
   }
 }
 
-
-onMounted(() => {
-  loadDatas()
+onMounted( async() => {
+  const res = await api.categoryGet()
+  categoryList.value = res.result
 })
-
-const loadDatas = async () => {
-  const res = await axios.get('/category/get')
-
-  categoryList.value = res.data.result
-  console.log("categoryList.value", categoryList.value)
-
-  //   {
-  //     "code": 200,
-  //     "msg": "获取成功",
-  //     "result": [
-  //         {
-  //             "id": 446763298160709,
-  //             "type": "无1"
-  //         },
-  //         {
-  //             "id": 446763511984197,
-  //             "type": "收集"
-  //         },
-  //         {
-  //             "id": 446764355108933,
-  //             "type": "生活"
-  //         },
-  //         {
-  //             "id": 446771860516933,
-  //             "type": "学习"
-  //         },
-  //         {
-  //             "id": 446776307593285,
-  //             "type": "服务器"
-  //         },
-  //         {
-  //             "id": 446806359834693,
-  //             "type": "前端"
-  //         },
-  //         {
-  //             "id": 446806416830533,
-  //             "type": "后端"
-  //         },
-  //         {
-  //             "id": 446806688526405,
-  //             "type": "今天"
-  //         },
-  //         {
-  //             "id": 446806703591493,
-  //             "type": "明天"
-  //         },
-  //         {
-  //             "id": 446806721044549,
-  //             "type": "昨天"
-  //         }
-  //     ]
-  // }
-}
-
-
 </script>
 
 <style lang="scss" scoped>

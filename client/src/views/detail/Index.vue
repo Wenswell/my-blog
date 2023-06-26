@@ -27,7 +27,6 @@
 
 
 <script setup>
-const axios = inject('axios')
 const message = inject('message')
 import { onMounted, ref } from 'vue';
 import { useRoute,useRouter } from 'vue-router';
@@ -40,15 +39,16 @@ const headerHeightPx = parseInt(getComputedStyle(document.documentElement).getPr
 
 import { MdPreview, MdCatalog } from 'md-editor-v3';
 import 'md-editor-v3/lib/preview.css';
+import api from '@/api';
 const id = 'preview-only';
 const scrollElement = document.documentElement;
 
 // 加载单篇文章的详细信息
 let blogDetail = ref({})
 const loadBlogById = async () => {
-  const result = await axios.get(`/blog/detail?id=${route.params.id}`)
-  if (result.data.code === 200 && result.data.result.length) {
-    blogDetail.value = result.data.result[0]
+  const result = await api.blogGetDetailById({id:route.params.id})
+  if (result.code === 200 && result.result.length) {
+    blogDetail.value = result.result[0]
     // message.success("文章加载成功")
   } else {
     message.error("加载失败，请刷新")
