@@ -1,7 +1,7 @@
 <template>
   <div class="home-page">
     <div id="header" ref="nav">
-      <HomeNav v-model:is-nav-hidden="isNavHidden" class="top-bar" />
+      <HomeNav />
     </div>
     <!-- <div class="home-place-holder"></div> -->
     <router-view></router-view>
@@ -12,13 +12,11 @@
 <script setup>
 import HomeNav from '@/components/HomeNav.vue'
 const nav = ref(null);
-const lastScrollTop = ref(0);
-const isNavHidden = ref(false);
 
 import { onBeforeRouteUpdate } from 'vue-router'
 
 onBeforeRouteUpdate(() => {
-  window.scrollTo(0, 20)
+  // window.scrollTo(0, 20)
 })
 
 
@@ -48,15 +46,6 @@ onMounted(() => {
   sectionOneObserver.observe(header)
 
 
-  window.addEventListener('scroll', () => {
-    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    if (scrollTop > lastScrollTop.value && scrollTop > nav.value.offsetHeight) {
-      isNavHidden.value = true;
-    } else {
-      isNavHidden.value = false;
-    }
-    lastScrollTop.value = scrollTop <= 0 ? 0 : scrollTop;
-  }, false);
 })
 
 
@@ -68,19 +57,20 @@ onMounted(() => {
 <style lang="scss" scoped>
 .scrolled{
   background-color: red;
-
 }
 
 
 .home-page {
+  background: #C9CCD3; 
+  background-image: linear-gradient(-180deg, rgba(255,255,255,0.50) 0%, rgba(0,0,0,0.50) 100%); 
+  background-blend-mode: lighten;
   margin: 0 auto;
   background-color: $clr-back-grey;
   min-height: 100dvh;
 }
 
-.home-place-holder {
-  height: $header-height + $gap;
-}
+// .home-place-holder {
+//   height: $header-height + $gap;
+// }
 
-.top-bar {}
 </style>

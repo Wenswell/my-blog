@@ -1,6 +1,6 @@
 <template>
   <main class="main-box">
-    
+
     <div class="flex-box" v-if="!defalut">
       <div class="left">
         <slot></slot>
@@ -51,6 +51,7 @@ const { defalut } = defineProps({
   align-content: flex-start;
   gap: $s-gap;
   margin-inline: auto;
+  padding-inline: $s-gap;
   flex-wrap: wrap;
 
   .left,
@@ -108,5 +109,9 @@ const { defalut } = defineProps({
 .footer {
   height: $footer-height;
   background-color: $clr-back;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $s-gap;
 }
 </style>

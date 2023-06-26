@@ -24,14 +24,18 @@ const router = useRouter()
 // import AdminStore from '@/store/index'
 // const adminStore = AdminStore()
 
+import { AdminStore } from '@/store/index'
+
+const adminStore = AdminStore()
 const menus = [
-  { name: '首页', href: '/' },
+  { name: '回到首页', href: '/' },
   { name: '文章管理', href: '/dash/article' },
   { name: '分类管理', href: '/dash/category' },
-  { name: '退出', href: '/login' },
+  { name: '退出登录', href: '/login' },
 ]
 
 const toPage = (href) => {
+  if (href == '/login') adminStore.cleanInfo()
   router.push(href)
 }
 

@@ -4,6 +4,7 @@ const router = express.Router()
 const { db, genid } = require('@db')
 
 const {
+  verifyToken,
   generateAccessToken,
   generateRefreshToken } = require('@utils/token/jwt')
 
@@ -56,6 +57,37 @@ router.post('/login', async (requset, result) => {
     })
     return
   }
+})
+
+router.get('/verify_token', async(request,result)=>{
+  const { accesstoken, refreshtoken } = request.headers
+  
+  verifyAccess = verifyToken(accesstoken)
+  console.log("verifyAccess", verifyAccess)
+  verifyRefresh = verifyToken(refreshtoken)
+  console.log("verifyRefresh", verifyRefresh)
+
+  if (!verifyAccess) {
+    result.send({
+      code: 204,
+      msg: '需要更新 accesstoken',
+      data: { accesstoken: generateAccessToken({a:1}) }
+    })
+    return
+  }
+  if (!verifyRefresh) {
+    result.send({
+      code: 401,
+      msg: '需要登录',
+      data: null
+    })
+    return
+  }
+  result.status(200).json({
+    code: 200,
+    msg: 'token有效',
+    data: null,
+  });
 })
 
 module.exports = router

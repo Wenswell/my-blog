@@ -29,8 +29,8 @@
 import { MdEditor } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 import TagSelect from "@/components/TagSelect.vue";
+import api from "@/api";
 const message = inject('message')
-const axios = inject('axios')
 
 const emit = defineEmits(['load-blog', 'change-tab'])
 const { updateArticle } = defineProps({
@@ -83,25 +83,19 @@ const onUploadImg = async (files, callback) => {
       return new Promise((rev, rej) => {
         const form = new FormData();
         form.append('file', file);
-
-        axios
-          .post('/_token/upload', form, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          })
+        api.uploadImg({ form })
           .then((res) => rev(res))
           .catch((error) => rej(error));
       });
     })
   );
   callback(res.map((item) => {
-    if (item.data.code != 200) {
-      message.warning(item.data.msg)
+    if (item.code != 200) {
+      message.warning(item.msg)
       return ''
     } else {
       message.success('图片上传成功')
-      return `${axios.defaults.baseURL}${item?.data?.data[0]}`
+      return `${api.baseURL}${item?.data[0]}`
     }
   }));
 };
@@ -126,22 +120,22 @@ const onAdd = async () => {
       const { id, title, categoryId, content, description, ...rest } = addArticle
       const sendUpdatedBlog = { id, title, categoryId, content, description }
 
-      const result = await axios.put('/blog/_token/update', sendUpdatedBlog)
-      if (result.data.code === 200) {
-        message.success(`文章 [ ${addArticle.title} ] ${result.data.msg}`)
+      const result = await api.blogUpdate(sendUpdatedBlog)
+      if (result.code === 200) {
+        message.success(`文章 [ ${addArticle.title} ] ${result.msg}`)
         resetInput()
       } else {
-        message.error(result.data.msg)
+        message.error(result.msg)
       }
     } else {
       const { id, ...rest } = addArticle;
-      const result = await axios.post('/blog/_token/add', { ...rest })
+      const result = await api.blogAdd({ ...rest })
 
-      if (result.data.code === 200) {
-        message.success(`文章 [ ${addArticle.title} ] ${result.data.msg}`)
+      if (result.code === 200) {
+        message.success(`文章 [ ${addArticle.title} ] ${result.msg}`)
         resetInput()
       } else {
-        message.error(result.data.msg)
+        message.error(result.msg)
       }
     }
 
@@ -154,8 +148,8 @@ const onAdd = async () => {
 // 加载分类
 const categoryOptions = ref([])
 const loadCategory = async () => {
-  const result = await axios.get('/category/get')
-  categoryOptions.value = result.data.result.map(item => {
+  const result = await api.categoryGet()
+  categoryOptions.value = result.result.map(item => {
     return {
       label: item.type,
       value: item.id

@@ -78,9 +78,8 @@ watchEffect(() => {
 
 
 // 加载标签
-const axios = inject('axios')
 const loadTags = async () => {
-  const result = await axios.get('/blog/get_tags')
+  const result = await api.getTags()
   getTags.value = result.data.result.map(obj => obj.name);
 }
 onMounted(() => {
